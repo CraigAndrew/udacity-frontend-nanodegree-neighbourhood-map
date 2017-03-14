@@ -3,7 +3,7 @@
 // imports
 const GoogleMapsApiLoader = require('google-maps-api-loader');
 
-// declarations
+// constant declarations
 const defaultLat = -29.83608;
 const defaultLng = 30.918399;
 const googleApiKey = 'AIzaSyC_77S5Ozh5RMPEQ98QBA9iOSHPQxZM_N8';
@@ -26,7 +26,15 @@ function initMap() {
 }
 
 function loadPlacesDataList() {
-  const placesArr = ['abc', 'def'];
+  const placesArr = [
+    'The Pavilion Shopping Center',
+    'Westville Mall',
+    'Kauai',
+    'Olive & Oil Cafe',
+    'Waxy O\'Connors',
+    'Lupa Osteria',
+    'Chez nous'
+  ];
 
   // Loop over the JSON array.
   placesArr.forEach(function (place) {
