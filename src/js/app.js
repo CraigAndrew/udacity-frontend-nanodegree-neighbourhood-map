@@ -1,4 +1,9 @@
 // Entry Point for application.
+
+// imports
+const GoogleMapsApiLoader = require('google-maps-api-loader');
+
+// declarations
 const defaultLat = -29.83608;
 const defaultLng = 30.918399;
 const googleApiKey = 'AIzaSyC_77S5Ozh5RMPEQ98QBA9iOSHPQxZM_N8';
@@ -37,8 +42,6 @@ function loadPlacesDataList() {
     dataList.append(option);
   });
 }
-
-var GoogleMapsApiLoader = require('google-maps-api-loader');
 
 GoogleMapsApiLoader({
   libraries: ['places'],
