@@ -18,15 +18,16 @@ const places = [
   { name: 'Lupa Osteria', lat: -29.8277474062012, lng: 30.930414401226106 },
   { name: 'Chez nous', lat: -29.836469892379846, lng: 30.91703684659349 }
 ];
+let map;
 
 /**
  * Temporary init map function.
  */
 function initMap() {
   var latLng = {lat: defaultLat, lng: defaultLng};
-  var map = new google.maps.Map(document.getElementById('map'), {
+  map = new google.maps.Map(document.getElementById('map'), {
     center: latLng,
-    zoom: 5
+    zoom: 15
   });
 
   places.forEach(({ lat, lng })=> {
@@ -39,31 +40,38 @@ function initMap() {
 }
 
 function loadPlacesDataList() {
+  // Get the <datalist> and <input> elements.
+  var dataList = document.getElementById('data-places');
+  var input = document.getElementById('places');
+
   // Loop over the JSON array.
   places.forEach(function ({ name }) {
-    // Get the <datalist> and <input> elements.
-    var dataList = document.getElementById('data-places');
-    var input = document.getElementById('places');
-
     // Create a new <option> element.
     var option = document.createElement('option');
     // Set the value using the item in the JSON array.
     option.value = name;
+
     // Add the <option> element to the <datalist>.
     dataList.append(option);
   });
+
+  input.addEventListener('input', function() {
+    moveToMarker();
+  });
+}
+
+function moveToMarker() {
+  map.panTo( new google.maps.LatLng( -29.849002300639423, 30.93577734073859 ) );
 }
 
 GoogleMapsApiLoader({
   libraries: ['places'],
   apiKey: 'AIzaSyC_77S5Ozh5RMPEQ98QBA9iOSHPQxZM_N8'
 }).then(function (googleApi) {
-  console.log('andrewc');
   initMap();
   var autocomplete = new googleApi.maps.places.AutocompleteService();
 
   loadPlacesDataList();
-  console.log('andrewc dataList', dataList);
 
   // Update the placeholder text.
   input.placeholder = "e.g. datalist";
