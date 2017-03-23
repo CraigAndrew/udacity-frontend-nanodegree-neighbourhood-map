@@ -2,6 +2,7 @@
 
 // imports
 const GoogleMapsApiLoader = require('google-maps-api-loader');
+const _ = require('lodash');
 
 // constant declarations
 const defaultLat = -29.83608;
@@ -55,13 +56,14 @@ function loadPlacesDataList() {
     dataList.append(option);
   });
 
-  input.addEventListener('input', function() {
-    moveToMarker();
+  input.addEventListener('input', function(e) {
+    const place = _.find(places, { 'name': e.target.value });
+    moveToMarker(place);
   });
 }
 
-function moveToMarker() {
-  map.panTo( new google.maps.LatLng( -29.849002300639423, 30.93577734073859 ) );
+function moveToMarker(place) {
+  map.panTo( new google.maps.LatLng( place.lat, place.lng ) );
 }
 
 GoogleMapsApiLoader({
