@@ -3,8 +3,11 @@
 // imports
 const GoogleMapsApiLoader = require('google-maps-api-loader');
 const _ = require('lodash');
+const $ = require('jquery');
 
 // constant declarations
+var clientId = '0FD1PHV1YKMHSMF0T1M1PFIFLWRB12EQAGRDIK5Z2WOJOVNQ';
+var clientSecret = 'XXASVO0SW14RJKNE0ETMNNATAPQVBO0PPJA5WFNATBPW3J3L';
 const defaultLat = -29.83608;
 const defaultLng = 30.918399;
 const googleApiKey = 'AIzaSyC_77S5Ozh5RMPEQ98QBA9iOSHPQxZM_N8';
@@ -60,6 +63,7 @@ function loadPlacesDataList() {
     const place = _.find(places, { 'name': e.target.value });
     if (place) {
       moveToMarker(place);
+      getFourSquareDetails(place);
     }
   });
 }
@@ -67,6 +71,79 @@ function loadPlacesDataList() {
 function moveToMarker(place) {
   map.panTo( new google.maps.LatLng( place.lat, place.lng ) );
 }
+
+/**
+ * Gets details via Four Square API
+ */
+function getFourSquareDetails(place) {
+  var url = 'https://api.foursquare.com/v2/venues/search?client_id=' + clientId + '&client_secret=' + clientSecret +
+      '&v=20130815' + '&ll=' + place.lat + ',' + place.lng + '&query=\'' + place.name + '\'&limit=1';
+
+  const getFourSquareDetailsForPlacePromise = new Promise((resolve, reject) => {
+    $.getJSON(url).done(function(response) {
+      resolve(response);
+    });
+  });
+
+  function formatFourSquareDetailsForPlaceMarkerDisplay(response) {
+    let fourSquareStr = '<p>Foursquare info:<br>';
+    var venue = response.response.venues[0];
+    var venueId = venue.id;
+    var venueName = venue.name;
+
+    if (venueName !== null && venueName !== undefined) {
+      fourSquareStr = fourSquareStr + 'name: ' + venueName + '<br>';
+    }
+
+    var phoneNum = venue.contact.formattedPhone;
+    if (phoneNum !== null && phoneNum !== undefined) {
+      fourSquareStr = fourSquareStr + 'phone: ' + phoneNum + '<br>';
+    }
+
+    var twitterId = venue.contact.twitter;
+    if (twitterId !== null && twitterId !== undefined) {
+      fourSquareStr = fourSquareStr + 'twitter name: ' +
+          twitterId + '<br>';
+    }
+
+    var address = venue.location.formattedAddress;
+    if (address !== null && address !== undefined) {
+      fourSquareStr = fourSquareStr + 'address: ' + address + '<br>';
+    }
+
+    var category = venue.categories.shortName;
+    if (category !== null && category !== undefined) {
+      fourSquareStr = fourSquareStr + 'category: ' + category + '<br>';
+    }
+
+    var checkinCount = venue.stats.checkinsCount;
+    if (checkinCount !== null && checkinCount !== undefined) {
+      fourSquareStr = fourSquareStr + '# of checkins: ' + checkinCount + '<br>';
+    }
+
+    var tipCount = venue.stats.tipCount;
+
+    // if (tipCount > 0) {
+    //   _this.getFourSquareTips(venueId, pt);
+    // } else {
+    //   fourSquareStr = fourSquareStr + '</p>';
+    //   _this.checkPano();
+    // }
+
+    console.log('andrewcfoursquare2', fourSquareStr);
+  }
+
+  getFourSquareDetailsForPlacePromise.then((response) => formatFourSquareDetailsForPlaceMarkerDisplay(response));
+
+  // $.getJSON(url).done(function(response) {
+  //   console.log('response', response);
+  //     .fail(function() {
+  //       fourSquareStr = 'Four square data request failed';
+  //       console.error('Four square failed to load information' +
+  //           'attempting to load error  we can get into info window');
+  //       _this.checkPano();
+  //     });
+};
 
 GoogleMapsApiLoader({
   libraries: ['places'],
