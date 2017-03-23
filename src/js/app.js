@@ -58,7 +58,9 @@ function loadPlacesDataList() {
 
   input.addEventListener('input', function(e) {
     const place = _.find(places, { 'name': e.target.value });
-    moveToMarker(place);
+    if (place) {
+      moveToMarker(place);
+    }
   });
 }
 
