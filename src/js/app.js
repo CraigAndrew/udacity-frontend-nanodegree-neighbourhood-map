@@ -6,13 +6,11 @@ const _ = require('lodash');
 const $ = require('jquery');
 
 // constant declarations
-var clientId = '0FD1PHV1YKMHSMF0T1M1PFIFLWRB12EQAGRDIK5Z2WOJOVNQ';
-var clientSecret = 'XXASVO0SW14RJKNE0ETMNNATAPQVBO0PPJA5WFNATBPW3J3L';
+var fourSquareClientId = '0FD1PHV1YKMHSMF0T1M1PFIFLWRB12EQAGRDIK5Z2WOJOVNQ';
+var fourSquareClientSecret = 'XXASVO0SW14RJKNE0ETMNNATAPQVBO0PPJA5WFNATBPW3J3L';
 const defaultLat = -29.83608;
 const defaultLng = 30.918399;
 const googleApiKey = 'AIzaSyC_77S5Ozh5RMPEQ98QBA9iOSHPQxZM_N8';
-const fourSquareClientId = '0FD1PHV1YKMHSMF0T1M1PFIFLWRB12EQAGRDIK5Z2WOJOVNQ';
-const fourSquareClientSecret = 'XXASVO0SW14RJKNE0ETMNNATAPQVBO0PPJA5WFNATBPW3J3L';
 const places = [
   { name: 'The Pavilion Shopping Center', lat: -29.849002300639423, lng: 30.93577734073859 },
   { name: 'Westville Mall', lat: -29.83608, lng: 30.918399 },
@@ -22,6 +20,7 @@ const places = [
   { name: 'Lupa Osteria', lat: -29.8277474062012, lng: 30.930414401226106 },
   { name: 'Chez nous', lat: -29.836469892379846, lng: 30.91703684659349 }
 ];
+const defaultZoomLevel = 15;
 let map;
 
 /**
@@ -31,16 +30,15 @@ function initMap() {
   var latLng = {lat: defaultLat, lng: defaultLng};
   map = new google.maps.Map(document.getElementById('map'), {
     center: latLng,
-    zoom: 15
+    zoom: defaultZoomLevel
   });
 
   places.forEach(({ lat, lng })=> {
-    var marker = new google.maps.Marker({
+    const marker = new google.maps.Marker({
       position: { lat, lng },
       map: map
     });
   });
-
 }
 
 function loadPlacesDataList() {
@@ -63,25 +61,34 @@ function loadPlacesDataList() {
     const place = _.find(places, { 'name': e.target.value });
     if (place) {
       moveToMarker(place);
-      getFourSquareDetails(place);
     }
   });
 }
 
 function moveToMarker(place) {
   map.panTo( new google.maps.LatLng( place.lat, place.lng ) );
+  const marker = new google.maps.Marker({
+    position: {
+      lat: place.lat,
+      lng: place.lng
+    },
+    map
+  });
+
+  const fourSquareDetails = getFourSquareDetails(marker, place);
 }
 
 /**
  * Gets details via Four Square API
  */
-function getFourSquareDetails(place) {
-  var url = 'https://api.foursquare.com/v2/venues/search?client_id=' + clientId + '&client_secret=' + clientSecret +
-      '&v=20130815' + '&ll=' + place.lat + ',' + place.lng + '&query=\'' + place.name + '\'&limit=1';
+function getFourSquareDetails(marker, place) {
+  var url = `https://api.foursquare.com/v2/venues/search?client_id=${fourSquareClientId}&client_secret=${fourSquareClientSecret}&v=20130815&ll=
+    ${place.lat},${place.lng}&query=\'${place.name}\'&limit=1`;
 
   const getFourSquareDetailsForPlacePromise = new Promise((resolve, reject) => {
     $.getJSON(url).done(function(response) {
-      resolve(response);
+      console.log('response', response);
+      resolve(formatFourSquareDetailsForPlaceMarkerDisplay(response));
     });
   });
 
@@ -131,9 +138,16 @@ function getFourSquareDetails(place) {
     // }
 
     console.log('andrewcfoursquare2', fourSquareStr);
+    return fourSquareStr;
   }
 
-  getFourSquareDetailsForPlacePromise.then((response) => formatFourSquareDetailsForPlaceMarkerDisplay(response));
+  getFourSquareDetailsForPlacePromise
+    .then((response) => {
+      const infoWindow = new google.maps.InfoWindow({
+        content: response
+      });
+      infoWindow.open(map, marker);
+    });
 
   // $.getJSON(url).done(function(response) {
   //   console.log('response', response);
@@ -147,7 +161,7 @@ function getFourSquareDetails(place) {
 
 GoogleMapsApiLoader({
   libraries: ['places'],
-  apiKey: 'AIzaSyC_77S5Ozh5RMPEQ98QBA9iOSHPQxZM_N8'
+  apiKey: googleApiKey
 }).then(function (googleApi) {
   initMap();
   var autocomplete = new googleApi.maps.places.AutocompleteService();
