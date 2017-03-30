@@ -1,9 +1,10 @@
 // Entry Point for application.
 
 // imports
-const GoogleMapsApiLoader = require('google-maps-api-loader');
-const _ = require('lodash');
-const $ = require('jquery');
+import _ from 'lodash';
+import $ from 'jquery';
+import ko from 'knockout';
+import GoogleMapsApiLoader from 'google-maps-api-loader';
 
 // constant declarations
 var fourSquareClientId = '0FD1PHV1YKMHSMF0T1M1PFIFLWRB12EQAGRDIK5Z2WOJOVNQ';
@@ -20,6 +21,7 @@ const places = [
   { name: 'Lupa Osteria', lat: -29.8277474062012, lng: 30.930414401226106 },
   { name: 'Chez nous', lat: -29.836469892379846, lng: 30.91703684659349 }
 ];
+const observablePlaces = ko.observableArray(places);
 const defaultZoomLevel = 15;
 let map;
 
@@ -33,10 +35,16 @@ function initMap() {
     zoom: defaultZoomLevel
   });
 
-  places.forEach(({ lat, lng })=> {
+  places.forEach(({ name, lat, lng })=> {
     const marker = new google.maps.Marker({
       position: { lat, lng },
       map: map
+    });
+    marker.addListener('click', () => {
+      const place = _.find(places, { name });
+      if (place) {
+        moveToMarker(place);
+      }
     });
   });
 }
@@ -158,6 +166,20 @@ function getFourSquareDetails(marker, place) {
   //       _this.checkPano();
   //     });
 };
+
+console.log('andrew ko init');
+// Here's my data model
+var ViewModel = function(first, last) {
+  this.firstName = ko.observable(first);
+  this.lastName = ko.observable(last);
+
+  this.fullName = ko.pureComputed(function() {
+    // Knockout tracks dependencies automatically. It knows that fullName depends on firstName and lastName, because these get called when evaluating fullName.
+    return this.firstName() + " " + this.lastName();
+  }, this);
+};
+
+ko.applyBindings(new ViewModel("Planet", "Earth")); // This makes Knockout get to work
 
 GoogleMapsApiLoader({
   libraries: ['places'],
