@@ -1,14 +1,14 @@
 // // Entry Point for application.
 //
 // // imports
-// import _ from 'lodash';
+import _ from 'lodash';
 import $ from 'jquery';
 import ko from 'knockout';
 import GoogleMapsApiLoader from 'google-maps-api-loader';
 //
 // // constant declarations
-// var fourSquareClientId = '0FD1PHV1YKMHSMF0T1M1PFIFLWRB12EQAGRDIK5Z2WOJOVNQ';
-// var fourSquareClientSecret = 'XXASVO0SW14RJKNE0ETMNNATAPQVBO0PPJA5WFNATBPW3J3L';
+var fourSquareClientId = '0FD1PHV1YKMHSMF0T1M1PFIFLWRB12EQAGRDIK5Z2WOJOVNQ';
+var fourSquareClientSecret = 'XXASVO0SW14RJKNE0ETMNNATAPQVBO0PPJA5WFNATBPW3J3L';
 const defaultLat = -29.83608;
 const defaultLng = 30.918399;
 const googleApiKey = 'AIzaSyC_77S5Ozh5RMPEQ98QBA9iOSHPQxZM_N8';
@@ -63,13 +63,6 @@ const googleApiKey = 'AIzaSyC_77S5Ozh5RMPEQ98QBA9iOSHPQxZM_N8';
 //
 //     // Add the <option> element to the <datalist>.
 //     dataList.append(option);
-//   });
-//
-//   input.addEventListener('input', function(e) {
-//     const place = _.find(places, { 'name': e.target.value });
-//     if (place) {
-//       moveToMarker(place);
-//     }
 //   });
 // }
 //
@@ -205,6 +198,15 @@ const googleApiKey = 'AIzaSyC_77S5Ozh5RMPEQ98QBA9iOSHPQxZM_N8';
 // });
 console.log('1');
 let locationsModel;
+
+function toggleBounce(marker) {
+  if (marker.getAnimation() !== null) {
+    marker.setAnimation(null);
+  } else {
+    marker.setAnimation(google.maps.Animation.BOUNCE);
+  }
+}
+
 GoogleMapsApiLoader({
   libraries: ['places'],
   apiKey: googleApiKey
@@ -245,24 +247,19 @@ GoogleMapsApiLoader({
 //   });
 // }
 
-var map;
+let map;
 function initialize() {
-  console.log('initialize');
   var mapOptions = {
     zoom: 14,
-    center: new google.maps.LatLng(35.7812643, -78.6496908),
+    center: new google.maps.LatLng(defaultLat, defaultLng),
     disableDefaultUI: true
   };
   map = new google.maps.Map(document.getElementById('map'),
   mapOptions);
 }
 
-// initialize();
-
 // Location Class completely builds everything needed for each location marker.
 var Location = function(title, lng, lat, venueId, cat) {
-  console.log('Location begin');
-
   var self = this;
   this.title = title;
   this.lng = lng;
@@ -275,7 +272,7 @@ var Location = function(title, lng, lat, venueId, cat) {
     console.log('getContent');
 
     var topTips = [];
-    var venueUrl = 'https://api.foursquare.com/v2/venues/' + self.venueId + '/tips?sort=recent&limit=5&v=20150609&client_id=4EPS21I4V4MVCYXWDT4QNZZG1JETWZ2LIJMYQ34FNBWZ1RMV&client_secret=U3P1XLU204VMYO4BHGIWPDOY130Z1AFTT1OQTI2TY0HW0T43';
+    var venueUrl = `https://api.foursquare.com/v2/venues/${self.venueId}/tips?sort=recent&limit=5&v=20150609&client_id=${fourSquareClientId}&client_secret=${fourSquareClientSecret}`;
 
     console.log('g1');
 
@@ -324,6 +321,7 @@ var Location = function(title, lng, lat, venueId, cat) {
     map.panTo(self.marker.getPosition())
     self.infowindow.setContent(self.content);
     self.infowindow.open(map,self.marker);
+    toggleBounce(this.marker);
   };
 
   // Assigns a click event listener to the marker to open the info window.
