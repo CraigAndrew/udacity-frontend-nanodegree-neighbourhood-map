@@ -365,3 +365,10 @@ function setupLocations() {
 }
 
 ko.applyBindings(locationsModel);
+
+// TODO: Filter markers on input type
+// TODO: When clicking on marker highlight item in listview
+// TODO: just display phone number and address in infowindow
+// TODO: Responsive design, mobile-first if you can
+// TODO: Google Autocomplete
+// NICE TO HAVE: MINIFY JS, CSS etc
