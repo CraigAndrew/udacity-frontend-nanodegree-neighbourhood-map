@@ -32,6 +32,7 @@
     "babel-core": "^6.1.21",
     "google-maps-api-loader": "^0.3.0",
     "lodash": "^3.10.1",
-    "jquery": "^2.2.4"
+    "jquery": "^2.2.4",
+    "knockout": "^3.4.2"
   }
 }
