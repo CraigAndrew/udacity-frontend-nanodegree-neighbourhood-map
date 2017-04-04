@@ -12,7 +12,9 @@ let fourSquareClientSecret = 'XXASVO0SW14RJKNE0ETMNNATAPQVBO0PPJA5WFNATBPW3J3L';
 const defaultLat = -29.83608;
 const defaultLng = 30.918399;
 const googleApiKey = 'AIzaSyC_77S5Ozh5RMPEQ98QBA9iOSHPQxZM_N8';
+const defaultZoomLevel = 15;
 let placesModel;
+let map;
 
 function toggleMarkerBounceAnimation(marker) {
   toggleMarkerAnimation(marker, google.maps.Animation.BOUNCE);
@@ -30,46 +32,18 @@ GoogleMapsApiLoader({
   libraries: ['places'],
   apiKey: googleApiKey
 }).then(function (googleApi) {
-  console.log('2');
   initialize();
-  console.log('3');
-
   initializePlaces();
-  // let autocomplete = new googleApi.maps.places.AutocompleteService();
-  //
-  // loadPlacesDataList();
-  //
-  // // Update the placeholder text.
+  const autocomplete = new googleApi.maps.places.AutocompleteService();
+  // Update the placeholder text.
   // input.placeholder = "e.g. datalist";
 }, function (err) {
   console.error(err);
 });
 
-// function initMap() {
-//   let latLng = {lat: defaultLat, lng: defaultLng};
-//   map = new google.maps.Map(document.getElementById('map'), {
-//     center: latLng,
-//     zoom: defaultZoomLevel
-//   });
-//
-//   places.forEach(({ name, lat, lng })=> {
-//     const marker = new google.maps.Marker({
-//       position: { lat, lng },
-//       map: map
-//     });
-//     marker.addListener('click', () => {
-//       const place = _.find(places, { name });
-//       if (place) {
-//         moveToMarker(place);
-//       }
-//     });
-//   });
-// }
-
-let map;
 function initialize() {
   let mapOptions = {
-    zoom: 14,
+    zoom: defaultZoomLevel,
     center: new google.maps.LatLng(defaultLat, defaultLng),
     disableDefaultUI: true
   };
@@ -88,12 +62,8 @@ let Place = function(title, lng, lat, venueId, cat) {
 
 // getConetent function retrieves 5 most recent tips from foursquare for the marker location.
   this.getContent = function() {
-    console.log('getContent');
-
     let topTips = [];
     let venueUrl = `https://api.foursquare.com/v2/venues/${self.venueId}/tips?sort=recent&limit=5&v=20150609&client_id=${fourSquareClientId}&client_secret=${fourSquareClientSecret}`;
-
-    console.log('g1');
 
     $.getJSON(venueUrl,
         function(data) {
@@ -110,9 +80,7 @@ let Place = function(title, lng, lat, venueId, cat) {
     });
   }();
 
-  console.log('g2.1');
   this.infowindow = new google.maps.InfoWindow();
-  console.log('g3');
 
   // Assigns a marker icon color based on the category of the location.
   switch (this.cat) {
@@ -146,7 +114,6 @@ let Place = function(title, lng, lat, venueId, cat) {
 
   // Assigns a click event listener to the marker to open the info window.
   this.addListener = google.maps.event.addListener(self.marker,'click', (this.openInfowindow));
-  console.log('Place end');
 };
 
 // Contains all the locations and search function.
@@ -157,8 +124,6 @@ placesModel = {
 
 // Search function for filtering through the list of locations based on the name of the location.
 placesModel.search = ko.dependentObservable(function() {
-  console.log('search', placesModel.locations);
-
   let self = this;
   let search = this.query().toLowerCase();
   return ko.utils.arrayFilter(self.locations, function(location) {
@@ -167,7 +132,6 @@ placesModel.search = ko.dependentObservable(function() {
 }, placesModel);
 
 function initializePlaces() {
-  console.log('initializePlaces');
   placesModel.locations = [
     new Place('The Pavilion Shopping Center', -29.849002300639423, 30.93577734073859, '4cdd6918d4ecb1f701298548', 'Shopping'),
     new Place('Westville Mall', -29.83608, 30.918399, '4ad4c00af964a5203ded20e3', 'Shopping'),
@@ -177,7 +141,6 @@ function initializePlaces() {
     new Place('Lupa Osteria', -29.8277474062012, 30.930414401226106, '4d615493e4fe5481a8618a9e', 'Shopping'),
     new Place('Chez nous', -29.836469892379846, 30.91703684659349, '4c84e24574d7b60ca66196d8', 'Shopping')
   ];
-  console.log('initializePlaces End', placesModel.locations);
 }
 
 ko.applyBindings(placesModel);
