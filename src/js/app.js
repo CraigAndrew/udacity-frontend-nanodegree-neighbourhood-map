@@ -52,30 +52,26 @@ function initialize() {
 }
 
 // Place Class completely builds everything needed for each location marker.
-let Place = function(title, lng, lat, venueId, cat) {
+let Place = function(name, lng, lat, cat) {
   let self = this;
-  this.title = title;
+  this.name = name;
   this.lng = lng;
   this.lat = lat;
-  this.venueId = venueId;
   this.cat = cat;
 
 // getConetent function retrieves 5 most recent tips from foursquare for the marker location.
   this.getContent = function() {
     let topTips = [];
-    let venueUrl = `https://api.foursquare.com/v2/venues/${self.venueId}/tips?sort=recent&limit=5&v=20150609&client_id=${fourSquareClientId}&client_secret=${fourSquareClientSecret}`;
+    let venueUrl = `https://api.foursquare.com/v2/venues/search?client_id=${fourSquareClientId}&client_secret=${fourSquareClientSecret}&v=20130815&ll=${self.lat},${self.lng}&query=\'${self.name}\'&limit=1`;
 
-    $.getJSON(venueUrl,
-        function(data) {
-          $.each(data.response.tips.items, function(i, tips){
-            topTips.push('<li>' + tips.text + '</li>');
-          });
-
-        }).done(function(){
-
-      self.content = '<h2>' + self.title + '</h2>' + '<h3>5 Most Recent Comments</h3>' + '<ol class="tips">' + topTips.join('') + '</ol>';
+    $.getJSON(venueUrl).done(function(data){
+      console.log('data', data);
+      // $.each(data.response.tips.items, function(i, tips){
+      //   topTips.push('<li>' + tips.text + '</li>');
+      // });
+      // self.content = '<h2>' + self.name + '</h2>' + '<h3>5 Most Recent Comments</h3>' + '<ol class="tips">' + topTips.join('') + '</ol>';
     }).fail(function(jqXHR, textStatus, errorThrown) {
-      self.content = '<h2>' + self.title + '</h2>' + '<h3>5 Most Recent Comments</h3>' + '<h4>Oops. There was a problem retrieving this location\'s comments.</h4>';
+      // self.content = '<h2>' + self.name + '</h2>' + '<h3>5 Most Recent Comments</h3>' + '<h4>Oops. There was a problem retrieving this location\'s comments.</h4>';
       console.log('getJSON request failed! ' + textStatus);
     });
   }();
@@ -97,7 +93,7 @@ let Place = function(title, lng, lat, venueId, cat) {
   this.marker = new google.maps.Marker({
     position: new google.maps.LatLng(self.lng, self.lat),
     map: map,
-    title: self.title,
+    name: self.name,
     icon: self.icon
   });
 
@@ -127,7 +123,7 @@ placesModel.search = ko.dependentObservable(function() {
   let self = this;
   let search = this.query().toLowerCase();
   return ko.utils.arrayFilter(self.locations, function(location) {
-    return location.title.toLowerCase().indexOf(search) >= 0;
+    return location.name.toLowerCase().indexOf(search) >= 0;
   });
 }, placesModel);
 
