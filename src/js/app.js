@@ -7,8 +7,8 @@ import ko from 'knockout';
 import GoogleMapsApiLoader from 'google-maps-api-loader';
 //
 // // constant declarations
-var fourSquareClientId = '0FD1PHV1YKMHSMF0T1M1PFIFLWRB12EQAGRDIK5Z2WOJOVNQ';
-var fourSquareClientSecret = 'XXASVO0SW14RJKNE0ETMNNATAPQVBO0PPJA5WFNATBPW3J3L';
+let fourSquareClientId = '0FD1PHV1YKMHSMF0T1M1PFIFLWRB12EQAGRDIK5Z2WOJOVNQ';
+let fourSquareClientSecret = 'XXASVO0SW14RJKNE0ETMNNATAPQVBO0PPJA5WFNATBPW3J3L';
 const defaultLat = -29.83608;
 const defaultLng = 30.918399;
 const googleApiKey = 'AIzaSyC_77S5Ozh5RMPEQ98QBA9iOSHPQxZM_N8';
@@ -29,7 +29,7 @@ const googleApiKey = 'AIzaSyC_77S5Ozh5RMPEQ98QBA9iOSHPQxZM_N8';
 //  * Temporary init map function.
 //  */
 // function initMap() {
-//   var latLng = {lat: defaultLat, lng: defaultLng};
+//   let latLng = {lat: defaultLat, lng: defaultLng};
 //   map = new google.maps.Map(document.getElementById('map'), {
 //     center: latLng,
 //     zoom: defaultZoomLevel
@@ -51,13 +51,13 @@ const googleApiKey = 'AIzaSyC_77S5Ozh5RMPEQ98QBA9iOSHPQxZM_N8';
 //
 // function loadPlacesDataList() {
 //   // Get the <datalist> and <input> elements.
-//   var dataList = document.getElementById('dataPlaces');
-//   var input = document.getElementById('places');
+//   let dataList = document.getElementById('dataPlaces');
+//   let input = document.getElementById('places');
 //
 //   // Loop over the JSON array.
 //   places.forEach(function ({ name }) {
 //     // Create a new <option> element.
-//     var option = document.createElement('option');
+//     let option = document.createElement('option');
 //     // Set the value using the item in the JSON array.
 //     option.value = name;
 //
@@ -83,7 +83,7 @@ const googleApiKey = 'AIzaSyC_77S5Ozh5RMPEQ98QBA9iOSHPQxZM_N8';
 //  * Gets details via Four Square API
 //  */
 // function getFourSquareDetails(marker, place) {
-//   var url = `https://api.foursquare.com/v2/venues/search?client_id=${fourSquareClientId}&client_secret=${fourSquareClientSecret}&v=20130815&ll=
+//   let url = `https://api.foursquare.com/v2/venues/search?client_id=${fourSquareClientId}&client_secret=${fourSquareClientSecret}&v=20130815&ll=
 //     ${place.lat},${place.lng}&query=\'${place.name}\'&limit=1`;
 //
 //   const getFourSquareDetailsForPlacePromise = new Promise((resolve, reject) => {
@@ -95,41 +95,41 @@ const googleApiKey = 'AIzaSyC_77S5Ozh5RMPEQ98QBA9iOSHPQxZM_N8';
 //
 //   function formatFourSquareDetailsForPlaceMarkerDisplay(response) {
 //     let fourSquareStr = '<p>Foursquare info:<br>';
-//     var venue = response.response.venues[0];
-//     var venueId = venue.id;
-//     var venueName = venue.name;
+//     let venue = response.response.venues[0];
+//     let venueId = venue.id;
+//     let venueName = venue.name;
 //
 //     if (venueName !== null && venueName !== undefined) {
 //       fourSquareStr = fourSquareStr + 'name: ' + venueName + '<br>';
 //     }
 //
-//     var phoneNum = venue.contact.formattedPhone;
+//     let phoneNum = venue.contact.formattedPhone;
 //     if (phoneNum !== null && phoneNum !== undefined) {
 //       fourSquareStr = fourSquareStr + 'phone: ' + phoneNum + '<br>';
 //     }
 //
-//     var twitterId = venue.contact.twitter;
+//     let twitterId = venue.contact.twitter;
 //     if (twitterId !== null && twitterId !== undefined) {
 //       fourSquareStr = fourSquareStr + 'twitter name: ' +
 //           twitterId + '<br>';
 //     }
 //
-//     var address = venue.location.formattedAddress;
+//     let address = venue.location.formattedAddress;
 //     if (address !== null && address !== undefined) {
 //       fourSquareStr = fourSquareStr + 'address: ' + address + '<br>';
 //     }
 //
-//     var category = venue.categories.shortName;
+//     let category = venue.categories.shortName;
 //     if (category !== null && category !== undefined) {
 //       fourSquareStr = fourSquareStr + 'category: ' + category + '<br>';
 //     }
 //
-//     var checkinCount = venue.stats.checkinsCount;
+//     let checkinCount = venue.stats.checkinsCount;
 //     if (checkinCount !== null && checkinCount !== undefined) {
 //       fourSquareStr = fourSquareStr + '# of checkins: ' + checkinCount + '<br>';
 //     }
 //
-//     var tipCount = venue.stats.tipCount;
+//     let tipCount = venue.stats.tipCount;
 //
 //     // if (tipCount > 0) {
 //     //   _this.getFourSquareTips(venueId, pt);
@@ -161,7 +161,7 @@ const googleApiKey = 'AIzaSyC_77S5Ozh5RMPEQ98QBA9iOSHPQxZM_N8';
 // };
 //
 // // Here's my data model
-// var ViewModel = function(first, last) {
+// let ViewModel = function(first, last) {
 //   this.dataPlaces = ko.observableArray([]);
 //   this.firstName = ko.observable(first);
 //   this.lastName = ko.observable(last);
@@ -187,7 +187,7 @@ const googleApiKey = 'AIzaSyC_77S5Ozh5RMPEQ98QBA9iOSHPQxZM_N8';
 //   apiKey: googleApiKey
 // }).then(function (googleApi) {
 //   initMap();
-//   var autocomplete = new googleApi.maps.places.AutocompleteService();
+//   let autocomplete = new googleApi.maps.places.AutocompleteService();
 //
 //   loadPlacesDataList();
 //
@@ -220,7 +220,7 @@ GoogleMapsApiLoader({
   console.log('3');
 
   initializePlaces();
-  // var autocomplete = new googleApi.maps.places.AutocompleteService();
+  // let autocomplete = new googleApi.maps.places.AutocompleteService();
   //
   // loadPlacesDataList();
   //
@@ -231,7 +231,7 @@ GoogleMapsApiLoader({
 });
 
 // function initMap() {
-//   var latLng = {lat: defaultLat, lng: defaultLng};
+//   let latLng = {lat: defaultLat, lng: defaultLng};
 //   map = new google.maps.Map(document.getElementById('map'), {
 //     center: latLng,
 //     zoom: defaultZoomLevel
@@ -253,18 +253,18 @@ GoogleMapsApiLoader({
 
 let map;
 function initialize() {
-  var mapOptions = {
+  let mapOptions = {
     zoom: 14,
     center: new google.maps.LatLng(defaultLat, defaultLng),
     disableDefaultUI: true
   };
   map = new google.maps.Map(document.getElementById('map'),
-  mapOptions);
+      mapOptions);
 }
 
 // Place Class completely builds everything needed for each location marker.
-var Place = function(title, lng, lat, venueId, cat) {
-  var self = this;
+let Place = function(title, lng, lat, venueId, cat) {
+  let self = this;
   this.title = title;
   this.lng = lng;
   this.lat = lat;
@@ -275,8 +275,8 @@ var Place = function(title, lng, lat, venueId, cat) {
   this.getContent = function() {
     console.log('getContent');
 
-    var topTips = [];
-    var venueUrl = `https://api.foursquare.com/v2/venues/${self.venueId}/tips?sort=recent&limit=5&v=20150609&client_id=${fourSquareClientId}&client_secret=${fourSquareClientSecret}`;
+    let topTips = [];
+    let venueUrl = `https://api.foursquare.com/v2/venues/${self.venueId}/tips?sort=recent&limit=5&v=20150609&client_id=${fourSquareClientId}&client_secret=${fourSquareClientSecret}`;
 
     console.log('g1');
 
@@ -320,7 +320,7 @@ var Place = function(title, lng, lat, venueId, cat) {
 
   // Opens the info window for the location marker.
   this.openInfowindow = function() {
-    for (var i=0; i < placesModel.locations.length; i++) {
+    for (let i=0; i < placesModel.locations.length; i++) {
       placesModel.locations[i].infowindow.close();
     }
     map.panTo(self.marker.getPosition())
@@ -344,8 +344,8 @@ placesModel = {
 placesModel.search = ko.dependentObservable(function() {
   console.log('search', placesModel.locations);
 
-  var self = this;
-  var search = this.query().toLowerCase();
+  let self = this;
+  let search = this.query().toLowerCase();
   return ko.utils.arrayFilter(self.locations, function(location) {
     return location.title.toLowerCase().indexOf(search) >= 0;
   });
