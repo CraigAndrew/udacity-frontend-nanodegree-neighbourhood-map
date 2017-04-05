@@ -100,6 +100,7 @@ let Place = function(name, cat, lng, lat) {
 
   // Opens the info window for the location marker.
   this.openInfowindow = function() {
+    console.log('openInfowindow');
     toggleMarkerBounceAnimation(_this.marker);
     for (let i=0; i < placesModel.locations.length; i++) {
       placesModel.locations[i].infowindow.close();
@@ -107,6 +108,7 @@ let Place = function(name, cat, lng, lat) {
     map.panTo(_this.marker.getPosition())
     _this.infowindow.setContent(_this.content);
     _this.infowindow.open(map,_this.marker);
+    map.setCenter(_this.marker.getPosition());
   };
 
   this.highlightPlace = function() {
