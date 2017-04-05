@@ -24,7 +24,7 @@
 		<div class="map-canvas" id="map-canvas"></div>
 
 		<script type="text/html" id="location">
-			<li class="location-item" data-bind="text: name, click: openInfowindow"></li>
+			<li class="location-item" data-bind="text: name, click: openInfowindow, event: { mouseover: highlightPlace, mouseout: unhighlightPlace }"></li>
 		</script>
 
 		<!--<script>-->

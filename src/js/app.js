@@ -111,6 +111,23 @@ let Place = function(name, cat, lng, lat) {
     _this.infowindow.open(map,_this.marker);
   };
 
+  this.highlightPlace = function() {
+    _this.marker.setIcon(imgPath + 'active.png');
+  }
+
+  this.unhighlightPlace = function() {
+    switch (_this.marker.cat) {
+      case "eat":
+        _this.marker.setIcon(imgPath + 'eat.png');
+        break;
+      case "shop":
+        _this.marker.setIcon(imgPath + 'shop.png');
+        break;
+      default:
+        _this.marker.setIcon(imgPath + 'default.png');
+    }
+  }
+
   // Assigns a click event listener to the marker to open the info window.
   this.addListener = google.maps.event.addListener(_this.marker,'click', (this.openInfowindow));
 };
@@ -147,6 +164,21 @@ function initializePlaces() {
     new Place('Chez nous', 'eat', -29.836469892379846, 30.91703684659349, '4c84e24574d7b60ca66196d8')
   ];
 }
+
+ko.bindingHandlers.hoverToggle = {
+  update: function(element, valueAccessor) {
+    console.log('hover');
+    // var css = valueAccessor();
+    //
+    // ko.utils.registerEventHandler(element, "mouseover", function() {
+    //   ko.utils.toggleDomNodeCssClass(element, ko.utils.unwrapObservable(css), true);
+    // });
+    //
+    // ko.utils.registerEventHandler(element, "mouseout", function() {
+    //   ko.utils.toggleDomNodeCssClass(element, ko.utils.unwrapObservable(css), false);
+    // });
+  }
+};
 
 ko.applyBindings(placesModel);
 
