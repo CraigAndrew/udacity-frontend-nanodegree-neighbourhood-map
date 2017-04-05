@@ -116,7 +116,7 @@ let Place = function(name, cat, lng, lat) {
   }
 
   this.unhighlightPlace = function() {
-    switch (_this.marker.cat) {
+    switch (_this.cat) {
       case "eat":
         _this.marker.setIcon(imgPath + 'eat.png');
         break;
@@ -155,30 +155,15 @@ placesModel.search = ko.dependentObservable(function() {
 
 function initializePlaces() {
   placesModel.locations = [
-    new Place('The Pavilion Shopping Center', 'shop', -29.849002300639423, 30.93577734073859, '4cdd6918d4ecb1f701298548'),
-    new Place('Westville Mall', 'shop', -29.83608, 30.918399, '4ad4c00af964a5203ded20e3'),
-    new Place('Kauai', 'eat', -29.83608, 30.918399, '4adc8051f964a520b92c21e3'),
-    new Place('Olive & Oil Cafe', 'eat', 29.839529871456172, 30.925247375447384, '4bb8979c3db7b713c965219a'),
-    new Place('Waxy O\'Connors', 'eat', -29.827756663602152, 30.929725103495258, '4b6b5120f964a52078002ce3'),
-    new Place('Lupa Osteria', 'eat', -29.8277474062012, 30.930414401226106, '4d615493e4fe5481a8618a9e'),
-    new Place('Chez nous', 'eat', -29.836469892379846, 30.91703684659349, '4c84e24574d7b60ca66196d8')
+    new Place('The Pavilion Shopping Center', 'shop', -29.849002300639423, 30.93577734073859),
+    new Place('Westville Mall', 'shop', -29.83608, 30.918399),
+    new Place('Kauai', 'eat', -29.83608, 30.918399),
+    new Place('Olive & Oil Cafe', 'eat', 29.839529871456172, 30.925247375447384),
+    new Place('Waxy O\'Connors', 'eat', -29.827756663602152, 30.929725103495258),
+    new Place('Lupa Osteria', 'eat', -29.8277474062012, 30.930414401226106),
+    new Place('Chez nous', 'eat', -29.836469892379846, 30.91703684659349)
   ];
 }
-
-ko.bindingHandlers.hoverToggle = {
-  update: function(element, valueAccessor) {
-    console.log('hover');
-    // var css = valueAccessor();
-    //
-    // ko.utils.registerEventHandler(element, "mouseover", function() {
-    //   ko.utils.toggleDomNodeCssClass(element, ko.utils.unwrapObservable(css), true);
-    // });
-    //
-    // ko.utils.registerEventHandler(element, "mouseout", function() {
-    //   ko.utils.toggleDomNodeCssClass(element, ko.utils.unwrapObservable(css), false);
-    // });
-  }
-};
 
 ko.applyBindings(placesModel);
 
