@@ -1,3 +1,4 @@
+'use strict';
 // // Entry Point for application.
 //
 // imports
@@ -7,6 +8,7 @@ import ko from 'knockout';
 import GoogleMapsApiLoader from 'google-maps-api-loader';
 
 // constant declarations
+const bounceTwiceAnimation = 4;
 const defaultLat = -29.83608;
 const defaultLng = 30.918399;
 const defaultZoomLevel = 15;
@@ -17,7 +19,7 @@ let map;
 let placesModel;
 
 function toggleMarkerBounceAnimation(marker) {
-  toggleMarkerAnimation(marker, google.maps.Animation.BOUNCE);
+  toggleMarkerAnimation(marker, bounceTwiceAnimation);
 }
 
 function toggleMarkerAnimation(marker, animation) {
@@ -101,14 +103,14 @@ let Place = function(name, cat, lng, lat) {
   // Opens the info window for the location marker.
   this.openInfowindow = function() {
     console.log('openInfowindow');
-    toggleMarkerBounceAnimation(_this.marker);
+    map.setCenter(_this.marker.getPosition());
     for (let i=0; i < placesModel.locations.length; i++) {
       placesModel.locations[i].infowindow.close();
     }
     map.panTo(_this.marker.getPosition())
     _this.infowindow.setContent(_this.content);
     _this.infowindow.open(map,_this.marker);
-    map.setCenter(_this.marker.getPosition());
+    _.defer(() => toggleMarkerBounceAnimation(_this.marker));
   };
 
   this.highlightPlace = function() {
