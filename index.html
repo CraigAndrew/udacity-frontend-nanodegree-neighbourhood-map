@@ -6,41 +6,14 @@
 </head>
 <body>
   <div class="row">
-		<!--<div class="col-md-3">-->
-			<!--<h3>Neighbourhood Map of Westville</h3>-->
-			<!--<input id="places" type="text" data-bind="textInput: filter">-->
-			<!--&lt;!&ndash;list="dataPlaces">&ndash;&gt;-->
-			<!--&lt;!&ndash;<datalist id="dataPlaces"></datalist>&ndash;&gt;-->
-
-			<!--<ul data-bind="foreach: filteredPlacesList" class="list-custom-name">-->
-				<!--<li data-bind="text: name, click: $root.clickHandler"></li>-->
-			<!--</ul>-->
-		<!--</div>-->
-		<div class="search-area" id="search-area">
-			<input class="search-input" placeholder="Search for Places..." type="text" name="q" data-bind="value: query, valueUpdate: 'keyup'">
-			<ul class="location-list" data-bind="visible:query, template: {name: 'location', foreach: search}">
-			</ul>
+		<div class="col-md-3">
+			<div class="search-area" id="search-area">
+				<input class="search-input" placeholder="Search for Places..." type="text" name="q" data-bind="value: query, valueUpdate: 'keyup'">
+				<ul class="location-list" data-bind="visible:query, template: {name: 'location', foreach: search}">
+				</ul>
+			</div>
+			<div class="map-canvas" id="map-canvas"></div>
 		</div>
-		<div class="map-canvas" id="map-canvas"></div>
-
-		<script type="text/html" id="location">
-			<li class="location-item" data-bind="text: name, click: openInfowindow, event: { mouseover: highlightPlace, mouseout: unhighlightPlace }"></li>
-		</script>
-
-		<!--<script>-->
-      <!--var map;-->
-      <!--function initialize() {-->
-        <!--var mapOptions = {-->
-          <!--zoom: 14,-->
-          <!--center: new google.maps.LatLng(35.7812643, -78.6496908),-->
-          <!--disableDefaultUI: true-->
-        <!--};-->
-        <!--map = new google.maps.Map(document.getElementById('map-canvas'),-->
-            <!--mapOptions);-->
-      <!--}-->
-      <!--initialize();-->
-		<!--</script>-->
-		<!--<script src="js/app.js"></script>-->
 	</div>
 	<div class="row">
 		<div class="col-md-3">
@@ -48,5 +21,8 @@
 		</div>
 	</div>
 
+	<script type="text/html" id="location">
+		<li class="location-item" data-bind="text: name, click: openInfowindow, event: { mouseover: highlightPlace, mouseout: unhighlightPlace }"></li>
+	</script>
 	<script src="dist/bundle.js"></script>
 </body>

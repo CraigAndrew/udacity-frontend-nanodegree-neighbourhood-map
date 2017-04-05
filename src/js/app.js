@@ -1,6 +1,6 @@
 // // Entry Point for application.
 //
-// // imports
+// imports
 import _ from 'lodash';
 import $ from 'jquery';
 import ko from 'knockout';
@@ -97,8 +97,6 @@ let Place = function(name, cat, lng, lat) {
     name: _this.name,
     icon: _this.icon
   });
-
-  this.markerObs = ko.observable(this.marker);
 
   // Opens the info window for the location marker.
   this.openInfowindow = function() {
