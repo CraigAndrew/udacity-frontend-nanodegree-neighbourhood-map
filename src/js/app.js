@@ -61,17 +61,16 @@ let Place = function(name, lng, lat, cat) {
 
 // getConetent function retrieves 5 most recent tips from foursquare for the marker location.
   this.getContent = function() {
-    let topTips = [];
-    let venueUrl = `https://api.foursquare.com/v2/venues/search?client_id=${fourSquareClientId}&client_secret=${fourSquareClientSecret}&v=20130815&ll=${self.lat},${self.lng}&query=\'${self.name}\'&limit=1`;
+    const url = `https://api.foursquare.com/v2/venues/search?client_id=${fourSquareClientId}&client_secret=${fourSquareClientSecret}&v=20130815&ll=${self.lng},${self.lat}&query=\'${self.name}\'&limit=1`;
 
-    $.getJSON(venueUrl).done(function(data){
-      console.log('data', data);
-      // $.each(data.response.tips.items, function(i, tips){
-      //   topTips.push('<li>' + tips.text + '</li>');
-      // });
-      // self.content = '<h2>' + self.name + '</h2>' + '<h3>5 Most Recent Comments</h3>' + '<ol class="tips">' + topTips.join('') + '</ol>';
+    $.getJSON(url).done(({ response }) => {
+      const venue = response.venues[0];
+      const venueName = venue.name;
+      const categoryName = venue.categories[0].name;
+      const location = venue.location;
+      const formattedAddress = location.formattedAddress;
+      self.content = `<h2>${venueName}</h2><h3>${categoryName}</h3><h4>${formattedAddress}</h4>`;
     }).fail(function(jqXHR, textStatus, errorThrown) {
-      // self.content = '<h2>' + self.name + '</h2>' + '<h3>5 Most Recent Comments</h3>' + '<h4>Oops. There was a problem retrieving this location\'s comments.</h4>';
       console.log('getJSON request failed! ' + textStatus);
     });
   }();
