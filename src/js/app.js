@@ -92,10 +92,13 @@ let Place = function(name, cat, lng, lat) {
 
   this.marker = new google.maps.Marker({
     position: new google.maps.LatLng(_this.lng, _this.lat),
-    map: map,
+    animation: google.maps.Animation.DROP,
+    map,
     name: _this.name,
     icon: _this.icon
   });
+
+  this.markerObs = ko.observable(this.marker);
 
   // Opens the info window for the location marker.
   this.openInfowindow = function() {
@@ -123,7 +126,13 @@ placesModel.search = ko.dependentObservable(function() {
   const _this = this;
   const search = this.query().toLowerCase();
   return ko.utils.arrayFilter(_this.locations, function(location) {
-    return location.name.toLowerCase().indexOf(search) >= 0;
+    const match =  location.name.toLowerCase().indexOf(search) >= 0;
+    if (!match) {
+      location.marker.setVisible(false);
+    } else {
+      location.marker.setVisible(true);
+    }
+    return match;
   });
 }, placesModel);
 
@@ -141,7 +150,6 @@ function initializePlaces() {
 
 ko.applyBindings(placesModel);
 
-// TODO: Filter markers on input type
 // TODO: When clicking on marker highlight item in listview
 // TODO: Responsive design, mobile-first if you can
 // TODO: Google Autocomplete
