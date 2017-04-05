@@ -17,13 +17,11 @@ let map;
 let placesModel;
 
 function toggleMarkerBounceAnimation(marker) {
-  console.log('marker', marker);
   toggleMarkerAnimation(marker, google.maps.Animation.BOUNCE);
 }
 
 function toggleMarkerAnimation(marker, animation) {
-  console.log('animation', animation);
-  if (!_.isNull(marker.getAnimation())) {
+  if (marker.getAnimation()) {
     marker.setAnimation(null);
   } else {
     marker.setAnimation(animation);
@@ -54,7 +52,7 @@ function initialize() {
 }
 
 // Place Class completely builds everything needed for each location marker.
-let Place = function(name, lng, lat, cat) {
+let Place = function(name, cat, lng, lat) {
   let _this = this;
   this.name = name;
   this.lng = lng;
@@ -100,14 +98,14 @@ let Place = function(name, lng, lat, cat) {
   });
 
   // Opens the info window for the location marker.
-  this.openInfowindow = function(marker) {
+  this.openInfowindow = function() {
+    toggleMarkerBounceAnimation(_this.marker);
     for (let i=0; i < placesModel.locations.length; i++) {
       placesModel.locations[i].infowindow.close();
     }
     map.panTo(_this.marker.getPosition())
     _this.infowindow.setContent(_this.content);
     _this.infowindow.open(map,_this.marker);
-    toggleMarkerBounceAnimation(_this.marker);
   };
 
   // Assigns a click event listener to the marker to open the info window.
@@ -131,13 +129,13 @@ placesModel.search = ko.dependentObservable(function() {
 
 function initializePlaces() {
   placesModel.locations = [
-    new Place('The Pavilion Shopping Center', -29.849002300639423, 30.93577734073859, '4cdd6918d4ecb1f701298548', 'shop'),
-    new Place('Westville Mall', -29.83608, 30.918399, '4ad4c00af964a5203ded20e3', 'shop'),
-    new Place('Kauai', -29.83608, 30.918399, '4adc8051f964a520b92c21e3', 'eat'),
-    new Place('Olive & Oil Cafe', 29.839529871456172, 30.925247375447384, '4bb8979c3db7b713c965219a', 'eat'),
-    new Place('Waxy O\'Connors', -29.827756663602152, 30.929725103495258, '4b6b5120f964a52078002ce3', 'eat'),
-    new Place('Lupa Osteria', -29.8277474062012, 30.930414401226106, '4d615493e4fe5481a8618a9e', 'eat'),
-    new Place('Chez nous', -29.836469892379846, 30.91703684659349, '4c84e24574d7b60ca66196d8', 'eat')
+    new Place('The Pavilion Shopping Center', 'shop', -29.849002300639423, 30.93577734073859, '4cdd6918d4ecb1f701298548'),
+    new Place('Westville Mall', 'shop', -29.83608, 30.918399, '4ad4c00af964a5203ded20e3'),
+    new Place('Kauai', 'eat', -29.83608, 30.918399, '4adc8051f964a520b92c21e3'),
+    new Place('Olive & Oil Cafe', 'eat', 29.839529871456172, 30.925247375447384, '4bb8979c3db7b713c965219a'),
+    new Place('Waxy O\'Connors', 'eat', -29.827756663602152, 30.929725103495258, '4b6b5120f964a52078002ce3'),
+    new Place('Lupa Osteria', 'eat', -29.8277474062012, 30.930414401226106, '4d615493e4fe5481a8618a9e'),
+    new Place('Chez nous', 'eat', -29.836469892379846, 30.91703684659349, '4c84e24574d7b60ca66196d8')
   ];
 }
 
@@ -145,7 +143,6 @@ ko.applyBindings(placesModel);
 
 // TODO: Filter markers on input type
 // TODO: When clicking on marker highlight item in listview
-// TODO: just display phone number and address in infowindow
 // TODO: Responsive design, mobile-first if you can
 // TODO: Google Autocomplete
 // NICE TO HAVE: MINIFY JS, CSS etc
