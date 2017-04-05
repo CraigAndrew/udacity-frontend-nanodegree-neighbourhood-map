@@ -7,20 +7,22 @@ import ko from 'knockout';
 import GoogleMapsApiLoader from 'google-maps-api-loader';
 
 // constant declarations
-let fourSquareClientId = '0FD1PHV1YKMHSMF0T1M1PFIFLWRB12EQAGRDIK5Z2WOJOVNQ';
-let fourSquareClientSecret = 'XXASVO0SW14RJKNE0ETMNNATAPQVBO0PPJA5WFNATBPW3J3L';
 const defaultLat = -29.83608;
 const defaultLng = 30.918399;
-const googleApiKey = 'AIzaSyC_77S5Ozh5RMPEQ98QBA9iOSHPQxZM_N8';
 const defaultZoomLevel = 15;
-let placesModel;
+const fourSquareClientId = '0FD1PHV1YKMHSMF0T1M1PFIFLWRB12EQAGRDIK5Z2WOJOVNQ';
+const fourSquareClientSecret = 'XXASVO0SW14RJKNE0ETMNNATAPQVBO0PPJA5WFNATBPW3J3L';
+const googleApiKey = 'AIzaSyC_77S5Ozh5RMPEQ98QBA9iOSHPQxZM_N8';
 let map;
+let placesModel;
 
 function toggleMarkerBounceAnimation(marker) {
+  console.log('marker', marker);
   toggleMarkerAnimation(marker, google.maps.Animation.BOUNCE);
 }
 
 function toggleMarkerAnimation(marker, animation) {
+  console.log('animation', animation);
   if (!_.isNull(marker.getAnimation())) {
     marker.setAnimation(null);
   } else {
@@ -53,15 +55,15 @@ function initialize() {
 
 // Place Class completely builds everything needed for each location marker.
 let Place = function(name, lng, lat, cat) {
-  let self = this;
+  let _this = this;
   this.name = name;
   this.lng = lng;
   this.lat = lat;
   this.cat = cat;
 
-// getConetent function retrieves 5 most recent tips from foursquare for the marker location.
+// getContent function retrieves 5 most recent tips from foursquare for the marker location.
   this.getContent = function() {
-    const url = `https://api.foursquare.com/v2/venues/search?client_id=${fourSquareClientId}&client_secret=${fourSquareClientSecret}&v=20130815&ll=${self.lng},${self.lat}&query=\'${self.name}\'&limit=1`;
+    const url = `https://api.foursquare.com/v2/venues/search?client_id=${fourSquareClientId}&client_secret=${fourSquareClientSecret}&v=20130815&ll=${_this.lng},${_this.lat}&query=\'${_this.name}\'&limit=1`;
 
     $.getJSON(url).done(({ response }) => {
       const venue = response.venues[0];
@@ -69,7 +71,7 @@ let Place = function(name, lng, lat, cat) {
       const categoryName = venue.categories[0].name;
       const location = venue.location;
       const formattedAddress = location.formattedAddress;
-      self.content = `<h2>${venueName}</h2><h3>${categoryName}</h3><h4>${formattedAddress}</h4>`;
+      _this.content = `<h2>${venueName}</h2><h3>${categoryName}</h3><h4>${formattedAddress}</h4>`;
     }).fail(function(jqXHR, textStatus, errorThrown) {
       console.log('getJSON request failed! ' + textStatus);
     });
@@ -78,37 +80,38 @@ let Place = function(name, lng, lat, cat) {
   this.infowindow = new google.maps.InfoWindow();
 
   // Assigns a marker icon color based on the category of the location.
+  const imgPath = 'src/css/img/';
   switch (this.cat) {
-    case "shop":
-      this.icon = 'src/css/img/shop.png';
-      break;
     case "eat":
-      this.icon = 'src/css/img/eat.png';
+      this.icon = imgPath + 'eat.png';
+      break;
+    case "shop":
+      this.icon = imgPath + 'shop.png';
       break;
     default:
-      this.icon = 'src/css/img/default.png';
+      this.icon = imgPath + 'default.png';
   }
 
   this.marker = new google.maps.Marker({
-    position: new google.maps.LatLng(self.lng, self.lat),
+    position: new google.maps.LatLng(_this.lng, _this.lat),
     map: map,
-    name: self.name,
-    icon: self.icon
+    name: _this.name,
+    icon: _this.icon
   });
 
   // Opens the info window for the location marker.
-  this.openInfowindow = function() {
+  this.openInfowindow = function(marker) {
     for (let i=0; i < placesModel.locations.length; i++) {
       placesModel.locations[i].infowindow.close();
     }
-    map.panTo(self.marker.getPosition())
-    self.infowindow.setContent(self.content);
-    self.infowindow.open(map,self.marker);
-    toggleMarkerBounceAnimation(this.marker);
+    map.panTo(_this.marker.getPosition())
+    _this.infowindow.setContent(_this.content);
+    _this.infowindow.open(map,_this.marker);
+    toggleMarkerBounceAnimation(_this.marker);
   };
 
   // Assigns a click event listener to the marker to open the info window.
-  this.addListener = google.maps.event.addListener(self.marker,'click', (this.openInfowindow));
+  this.addListener = google.maps.event.addListener(_this.marker,'click', (this.openInfowindow));
 };
 
 // Contains all the locations and search function.
@@ -119,22 +122,22 @@ placesModel = {
 
 // Search function for filtering through the list of locations based on the name of the location.
 placesModel.search = ko.dependentObservable(function() {
-  let self = this;
-  let search = this.query().toLowerCase();
-  return ko.utils.arrayFilter(self.locations, function(location) {
+  const _this = this;
+  const search = this.query().toLowerCase();
+  return ko.utils.arrayFilter(_this.locations, function(location) {
     return location.name.toLowerCase().indexOf(search) >= 0;
   });
 }, placesModel);
 
 function initializePlaces() {
   placesModel.locations = [
-    new Place('The Pavilion Shopping Center', -29.849002300639423, 30.93577734073859, '4cdd6918d4ecb1f701298548', 'Shopping'),
-    new Place('Westville Mall', -29.83608, 30.918399, '4ad4c00af964a5203ded20e3', 'Shopping'),
-    new Place('Kauai', -29.83608, 30.918399, '4adc8051f964a520b92c21e3', 'Shopping'),
-    new Place('Olive & Oil Cafe', 29.839529871456172, 30.925247375447384, '4bb8979c3db7b713c965219a', 'Shopping'),
-    new Place('Waxy O\'Connors', -29.827756663602152, 30.929725103495258, '4b6b5120f964a52078002ce3', 'Shopping'),
-    new Place('Lupa Osteria', -29.8277474062012, 30.930414401226106, '4d615493e4fe5481a8618a9e', 'Shopping'),
-    new Place('Chez nous', -29.836469892379846, 30.91703684659349, '4c84e24574d7b60ca66196d8', 'Shopping')
+    new Place('The Pavilion Shopping Center', -29.849002300639423, 30.93577734073859, '4cdd6918d4ecb1f701298548', 'shop'),
+    new Place('Westville Mall', -29.83608, 30.918399, '4ad4c00af964a5203ded20e3', 'shop'),
+    new Place('Kauai', -29.83608, 30.918399, '4adc8051f964a520b92c21e3', 'eat'),
+    new Place('Olive & Oil Cafe', 29.839529871456172, 30.925247375447384, '4bb8979c3db7b713c965219a', 'eat'),
+    new Place('Waxy O\'Connors', -29.827756663602152, 30.929725103495258, '4b6b5120f964a52078002ce3', 'eat'),
+    new Place('Lupa Osteria', -29.8277474062012, 30.930414401226106, '4d615493e4fe5481a8618a9e', 'eat'),
+    new Place('Chez nous', -29.836469892379846, 30.91703684659349, '4c84e24574d7b60ca66196d8', 'eat')
   ];
 }
 
