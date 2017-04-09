@@ -8,8 +8,11 @@
 </head>
 <body>
   <div class="row">
+		<div class="col-md-3" id="search-here">
+			<span>SEARCH HERE</span>
+		</div>
 		<div class="col-md-3">
-			<div class="search-area" id="search-area">
+			<div class="search-area collapse" id="search-area">
 				<input class="search-input" placeholder="Search for Places..." type="text" name="q" data-bind="value: query, valueUpdate: 'keyup'">
 				<ul class="location-list" data-bind="visible:query, template: {name: 'location', foreach: search}">
 				</ul>
