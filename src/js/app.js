@@ -36,9 +36,11 @@ GoogleMapsApiLoader({
 }).then(function (googleApi) {
   initialize();
   initializePlaces();
-  $("#search-here").click(() => {
-    $("#search-area").toggle();
-  });
+  // $("ul").click(() => {
+  //   console.log('click');
+  //   $("#search-area").toggle();
+  // });
+  $("#search-area").resizable();
 }, function (err) {
   console.error(err);
 });
