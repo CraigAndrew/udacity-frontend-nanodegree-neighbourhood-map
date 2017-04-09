@@ -29740,10 +29740,10 @@ function initializePlaces() {
 
 _knockout2.default.applyBindings(placesModel);
 
-// TODO: When clicking on marker highlight item in listview
 // TODO: Responsive design, mobile-first if you can
 // TODO: Google Autocomplete
 // NICE TO HAVE: MINIFY JS, CSS etc
+// TODO: When clicking on marker highlight item in listview
 
 
 // const observablePlaces = ko.observableArray(places);

@@ -26,13 +26,17 @@
     "babelify": "^7.2.0",
     "browserify": "^12.0.1",
     "gulp": "^3.9.0",
+    "gulp-concat": "^2.6.1",
+    "gulp-rename": "^1.2.2",
+    "gulp-uglify": "^2.1.2",
     "vinyl-source-stream": "^1.1.0"
   },
   "dependencies": {
     "babel-core": "^6.1.21",
+    "bootstrap": "^3.3.7",
     "google-maps-api-loader": "^0.3.0",
-    "lodash": "^3.10.1",
     "jquery": "^2.2.4",
-    "knockout": "^3.4.2"
+    "knockout": "^3.4.2",
+    "lodash": "^3.10.1"
   }
 }
