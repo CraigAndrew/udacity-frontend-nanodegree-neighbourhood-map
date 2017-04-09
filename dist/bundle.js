@@ -29594,10 +29594,19 @@ var googleApiKey = 'AIzaSyC_77S5Ozh5RMPEQ98QBA9iOSHPQxZM_N8';
 var map = void 0;
 var placesModel = void 0;
 
+/**
+ *
+ * @param marker
+ */
 function toggleMarkerBounceAnimation(marker) {
   toggleMarkerAnimation(marker, bounceTwiceAnimation);
 }
 
+/**
+ *
+ * @param marker
+ * @param animation
+ */
 function toggleMarkerAnimation(marker, animation) {
   if (marker.getAnimation()) {
     marker.setAnimation(null);
@@ -29606,21 +29615,43 @@ function toggleMarkerAnimation(marker, animation) {
   }
 }
 
+/**
+ *
+ */
 (0, _googleMapsApiLoader2.default)({
   libraries: ['places'],
   apiKey: googleApiKey
 }).then(function (googleApi) {
   initialize();
   initializePlaces();
-  // $("ul").click(() => {
-  //   console.log('click');
-  //   $("#search-area").toggle();
-  // });
-  (0, _jquery2.default)("#search-area").resizable();
+  (0, _jquery2.default)("div.search-area").click(function () {
+    console.log('click');
+    (0, _jquery2.default)("ul").slideToggle();
+  });
+  (0, _jquery2.default)(window).resize(function () {
+    console.log('window resized');
+    if (isMobile()) {
+      (0, _jquery2.default)("ul").slideUp();
+    } else {
+      (0, _jquery2.default)("ul").slideDown();
+    }
+  });
 }, function (err) {
   console.error(err);
 });
 
+/**
+ *
+ * @returns {boolean}
+ */
+function isMobile() {
+  return (/Mobi/.test(navigator.userAgent)
+  );
+}
+
+/**
+ *
+ */
 function initialize() {
   var mapOptions = {
     zoom: defaultZoomLevel,
@@ -29630,6 +29661,14 @@ function initialize() {
   map = new google.maps.Map(document.getElementById('map'), mapOptions);
 }
 
+/**
+ *
+ * @param name
+ * @param cat
+ * @param lng
+ * @param lat
+ * @constructor
+ */
 // Place Class completely builds everything needed for each location marker.
 var Place = function Place(name, cat, lng, lat) {
   var _this = this;
@@ -29639,6 +29678,9 @@ var Place = function Place(name, cat, lng, lat) {
   this.cat = cat;
 
   // getContent function retrieves 5 most recent tips from foursquare for the marker location.
+  /**
+   *
+   */
   this.getContent = function () {
     var url = 'https://api.foursquare.com/v2/venues/search?client_id=' + fourSquareClientId + '&client_secret=' + fourSquareClientSecret + '&v=20130815&ll=' + _this.lng + ',' + _this.lat + '&query=\'' + _this.name + '\'&limit=1';
 
@@ -29680,6 +29722,9 @@ var Place = function Place(name, cat, lng, lat) {
   });
 
   // Opens the info window for the location marker.
+  /**
+   *
+   */
   this.openInfowindow = function () {
     map.setCenter(_this.marker.getPosition());
     for (var i = 0; i < placesModel.locations.length; i++) {
@@ -29693,10 +29738,16 @@ var Place = function Place(name, cat, lng, lat) {
     });
   };
 
+  /**
+   *
+   */
   this.highlightPlace = function () {
     _this.marker.setIcon(imgPath + 'active.png');
   };
 
+  /**
+   *
+   */
   this.unhighlightPlace = function () {
     switch (_this.cat) {
       case "eat":
@@ -29720,6 +29771,9 @@ placesModel = {
   query: _knockout2.default.observable('')
 };
 
+/**
+ *
+ */
 // Search function for filtering through the list of locations based on the name of the location.
 placesModel.search = _knockout2.default.dependentObservable(function () {
   var _this = this;
@@ -29735,6 +29789,9 @@ placesModel.search = _knockout2.default.dependentObservable(function () {
   });
 }, placesModel);
 
+/**
+ *
+ */
 function initializePlaces() {
   placesModel.locations = [new Place('The Pavilion Shopping Center', 'shop', -29.849002300639423, 30.93577734073859), new Place('Westville Mall', 'shop', -29.83608, 30.918399), new Place('Kauai', 'eat', -29.83608, 30.918399), new Place('Olive & Oil Cafe', 'eat', 29.839529871456172, 30.925247375447384), new Place('Waxy O\'Connors', 'eat', -29.827756663602152, 30.929725103495258), new Place('Lupa Osteria', 'eat', -29.8277474062012, 30.930414401226106), new Place('Chez nous', 'eat', -29.836469892379846, 30.91703684659349)];
 }
@@ -29742,8 +29799,6 @@ function initializePlaces() {
 _knockout2.default.applyBindings(placesModel);
 
 // TODO: Responsive design, mobile-first if you can
-// TODO: Bring up error message if scripts fail to load
-// TODO: Google Autocomplete
 // NICE TO HAVE: MINIFY JS, CSS etc
 // TODO: When clicking on marker highlight item in listview
 

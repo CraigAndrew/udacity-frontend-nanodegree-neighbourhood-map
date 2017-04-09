@@ -18,10 +18,19 @@ const googleApiKey = 'AIzaSyC_77S5Ozh5RMPEQ98QBA9iOSHPQxZM_N8';
 let map;
 let placesModel;
 
+/**
+ *
+ * @param marker
+ */
 function toggleMarkerBounceAnimation(marker) {
   toggleMarkerAnimation(marker, bounceTwiceAnimation);
 }
 
+/**
+ *
+ * @param marker
+ * @param animation
+ */
 function toggleMarkerAnimation(marker, animation) {
   if (marker.getAnimation()) {
     marker.setAnimation(null);
@@ -30,21 +39,42 @@ function toggleMarkerAnimation(marker, animation) {
   }
 }
 
+/**
+ *
+ */
 GoogleMapsApiLoader({
   libraries: ['places'],
   apiKey: googleApiKey
 }).then(function (googleApi) {
   initialize();
   initializePlaces();
-  // $("ul").click(() => {
-  //   console.log('click');
-  //   $("#search-area").toggle();
-  // });
-  $("#search-area").resizable();
+  $("div.search-area").click(() => {
+    console.log('click');
+    $("ul").slideToggle();
+  });
+  $( window ).resize(function() {
+    console.log('window resized');
+    if (isMobile()) {
+      $("ul").slideUp();
+    } else {
+      $("ul").slideDown();
+    }
+  });
 }, function (err) {
   console.error(err);
 });
 
+/**
+ *
+ * @returns {boolean}
+ */
+function isMobile() {
+  return (/Mobi/.test(navigator.userAgent));
+}
+
+/**
+ *
+ */
 function initialize() {
   let mapOptions = {
     zoom: defaultZoomLevel,
@@ -55,6 +85,14 @@ function initialize() {
       mapOptions);
 }
 
+/**
+ *
+ * @param name
+ * @param cat
+ * @param lng
+ * @param lat
+ * @constructor
+ */
 // Place Class completely builds everything needed for each location marker.
 let Place = function(name, cat, lng, lat) {
   let _this = this;
@@ -64,6 +102,9 @@ let Place = function(name, cat, lng, lat) {
   this.cat = cat;
 
 // getContent function retrieves 5 most recent tips from foursquare for the marker location.
+  /**
+   *
+   */
   this.getContent = function() {
     const url = `https://api.foursquare.com/v2/venues/search?client_id=${fourSquareClientId}&client_secret=${fourSquareClientSecret}&v=20130815&ll=${_this.lng},${_this.lat}&query=\'${_this.name}\'&limit=1`;
 
@@ -103,6 +144,9 @@ let Place = function(name, cat, lng, lat) {
   });
 
   // Opens the info window for the location marker.
+  /**
+   *
+   */
   this.openInfowindow = function() {
     map.setCenter(_this.marker.getPosition());
     for (let i=0; i < placesModel.locations.length; i++) {
@@ -114,10 +158,16 @@ let Place = function(name, cat, lng, lat) {
     _.defer(() => toggleMarkerBounceAnimation(_this.marker));
   };
 
+  /**
+   *
+   */
   this.highlightPlace = function() {
     _this.marker.setIcon(imgPath + 'active.png');
   }
 
+  /**
+   *
+   */
   this.unhighlightPlace = function() {
     switch (_this.cat) {
       case "eat":
@@ -141,6 +191,9 @@ placesModel = {
   query: ko.observable(''),
 };
 
+/**
+ *
+ */
 // Search function for filtering through the list of locations based on the name of the location.
 placesModel.search = ko.dependentObservable(function() {
   const _this = this;
@@ -156,6 +209,9 @@ placesModel.search = ko.dependentObservable(function() {
   });
 }, placesModel);
 
+/**
+ *
+ */
 function initializePlaces() {
   placesModel.locations = [
     new Place('The Pavilion Shopping Center', 'shop', -29.849002300639423, 30.93577734073859),
@@ -171,7 +227,5 @@ function initializePlaces() {
 ko.applyBindings(placesModel);
 
 // TODO: Responsive design, mobile-first if you can
-// TODO: Bring up error message if scripts fail to load
-// TODO: Google Autocomplete
 // NICE TO HAVE: MINIFY JS, CSS etc
 // TODO: When clicking on marker highlight item in listview
