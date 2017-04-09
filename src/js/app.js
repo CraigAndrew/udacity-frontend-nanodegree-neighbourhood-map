@@ -50,7 +50,18 @@ GoogleMapsApiLoader({
   initializePlaces();
   $("div.search-area").click(() => {
     console.log('click');
+    console.log($('span#arrow').html());
     $("ul").slideToggle();
+
+    _.defer(() => {
+      if ($('span#arrow').html() === '▼') {
+        $('span#arrow').html('▲');
+        $('div.search-area').css({'width': '100%'});
+      } else {
+        $('span#arrow').html('▼');
+        $('div.search-area').css({'width': 'auto'});
+      }
+    });
   });
   $( window ).resize(function() {
     console.log('window resized');

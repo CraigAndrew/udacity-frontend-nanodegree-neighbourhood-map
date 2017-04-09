@@ -10,10 +10,14 @@ input[list] {
   background-color: rgba(0,0,0,.3);
 }
 
+input.search-input {
+  margin: 5px;
+}
+
 div.search-area {
   position: absolute;
-  width: 95%;
-  max-width: 200px;
+  width: auto;
+  max-width: 250px;
   min-width: 100px;
   margin: 1% 0 0 2%;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);

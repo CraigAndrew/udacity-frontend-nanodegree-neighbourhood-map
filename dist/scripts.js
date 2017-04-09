@@ -29626,7 +29626,18 @@ function toggleMarkerAnimation(marker, animation) {
   initializePlaces();
   (0, _jquery2.default)("div.search-area").click(function () {
     console.log('click');
+    console.log((0, _jquery2.default)('span#arrow').html());
     (0, _jquery2.default)("ul").slideToggle();
+
+    _lodash2.default.defer(function () {
+      if ((0, _jquery2.default)('span#arrow').html() === '▼') {
+        (0, _jquery2.default)('span#arrow').html('▲');
+        (0, _jquery2.default)('div.search-area').css({ 'width': '100%' });
+      } else {
+        (0, _jquery2.default)('span#arrow').html('▼');
+        (0, _jquery2.default)('div.search-area').css({ 'width': 'auto' });
+      }
+    });
   });
   (0, _jquery2.default)(window).resize(function () {
     console.log('window resized');

@@ -14,7 +14,7 @@
   <div class="row" id="search-input-row">
 		<div class="col-md-3">
 			<div class="search-area collapse" id="search-area">
-				<input class="search-input" placeholder="Search for Places..." type="text" name="q" data-bind="value: query, valueUpdate: 'keyup'">
+				<input class="search-input" placeholder="Search for Places..." type="text" name="q" data-bind="value: query, valueUpdate: 'keyup'"><span id="arrow">▼</span>
 				<ul class="location-list" data-bind="visible:query, template: {name: 'location', foreach: search}">
 				</ul>
 			</div>
