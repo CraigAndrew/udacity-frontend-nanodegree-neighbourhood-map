@@ -15,6 +15,7 @@ const defaultZoomLevel = 15;
 const fourSquareClientId = '0FD1PHV1YKMHSMF0T1M1PFIFLWRB12EQAGRDIK5Z2WOJOVNQ';
 const fourSquareClientSecret = 'XXASVO0SW14RJKNE0ETMNNATAPQVBO0PPJA5WFNATBPW3J3L';
 const googleApiKey = 'AIzaSyC_77S5Ozh5RMPEQ98QBA9iOSHPQxZM_N8';
+const imgPath = 'src/css/img/';
 let map;
 let placesModel;
 
@@ -172,6 +173,34 @@ placesModel = {
     new Place('Chez nous', 'eat', -29.836469892379846, 30.91703684659349)
   ],
   query: ko.observable(''),
+  showInfoWindow: function(place) {
+    console.log('listClickCallback4', place.marker);
+    map.setCenter(place.marker.getPosition());
+    for (let i=0; i < placesModel.locations.length; i++) {
+      if (placesModel.locations[i].marker.infowindow) {
+        placesModel.locations[i].marker.infowindow.close();
+      }
+    }
+    map.panTo(place.marker.getPosition())
+    place.marker.infowindow.setContent(place.content);
+    place.marker.infowindow.open(map, place.marker);
+    _.defer(() => toggleMarkerBounceAnimation(place.marker));
+  },
+  highlightPlace: function(place) {
+    place.marker.setIcon(imgPath + 'active.png');
+  },
+  unhighlightPlace: function(place) {
+    switch (place.cat) {
+      case "eat":
+        place.marker.setIcon(imgPath + 'eat.png');
+        break;
+      case "shop":
+        place.marker.setIcon(imgPath + 'shop.png');
+        break;
+      default:
+        place.marker.setIcon(imgPath + 'default.png');
+    }
+  }
 };
 
 /**

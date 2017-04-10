@@ -28,8 +28,7 @@
 	</div>
 
 	<script type="text/html" id="location">
-		<li class="location-item" data-bind="text: name"></li>
-		<!--<li class="location-item" data-bind="text: name, click: openInfowindow, event: { mouseover: highlightPlace, mouseout: unhighlightPlace }"></li>-->
+		<li class="location-item" data-bind="text: name, click: $root.showInfoWindow, event: { mouseover: $root.highlightPlace, mouseout: $root.unhighlightPlace }"></li>
 	</script>
 	<script src="dist/bundle.min.js"></script>
 </body>
