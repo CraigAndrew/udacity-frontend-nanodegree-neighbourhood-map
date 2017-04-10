@@ -29585,37 +29585,19 @@ var _mapHelper = require('./map-helper');
 
 var _mapHelper2 = _interopRequireDefault(_mapHelper);
 
+var _util = require('./util');
+
+var _util2 = _interopRequireDefault(_util);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 // constant declarations
-var bounceTwiceAnimation = 4;
 var fourSquareClientId = '0FD1PHV1YKMHSMF0T1M1PFIFLWRB12EQAGRDIK5Z2WOJOVNQ';
 var fourSquareClientSecret = 'XXASVO0SW14RJKNE0ETMNNATAPQVBO0PPJA5WFNATBPW3J3L';
 var googleApiKey = 'AIzaSyC_77S5Ozh5RMPEQ98QBA9iOSHPQxZM_N8';
 var imgPath = 'src/css/img/';
 var map = void 0;
 var placesModel = void 0;
-
-/**
- *
- * @param marker
- */
-function toggleMarkerBounceAnimation(marker) {
-  toggleMarkerAnimation(marker, bounceTwiceAnimation);
-}
-
-/**
- *
- * @param marker
- * @param animation
- */
-function toggleMarkerAnimation(marker, animation) {
-  if (marker.getAnimation()) {
-    marker.setAnimation(null);
-  } else {
-    marker.setAnimation(animation);
-  }
-}
 
 /**
  *
@@ -29680,7 +29662,7 @@ placesModel = {
     place.marker.infowindow.setContent(place.content);
     place.marker.infowindow.open(map, place.marker);
     _lodash2.default.defer(function () {
-      return toggleMarkerBounceAnimation(place.marker);
+      return _util2.default.toggleMarkerBounceAnimation(place.marker);
     });
   },
   highlightPlace: function highlightPlace(place) {
@@ -29731,21 +29713,6 @@ placesModel.search = _knockout2.default.computed(function () {
   return searchResults;
 }, placesModel);
 
-/**
- *
- */
-function initializePlaces() {
-  // placesModel.locations = [
-  //   new Place('The Pavilion Shopping Center', 'shop', -29.849002300639423, 30.93577734073859),
-  //   new Place('Westville Mall', 'shop', -29.83608, 30.918399),
-  //   new Place('Kauai', 'eat', -29.83608, 30.918399),
-  //   new Place('Olive & Oil Cafe', 'eat', 29.839529871456172, 30.925247375447384),
-  //   new Place('Waxy O\'Connors', 'eat', -29.827756663602152, 30.929725103495258),
-  //   new Place('Lupa Osteria', 'eat', -29.8277474062012, 30.930414401226106),
-  //   new Place('Chez nous', 'eat', -29.836469892379846, 30.91703684659349)
-  // ];
-}
-
 function setupMarkersForPlaces() {
   _lodash2.default.forEach(placesModel.locations, function (location) {
     location.marker = new google.maps.Marker({
@@ -29771,7 +29738,7 @@ function setupMarkersForPlaces() {
       location.marker.infowindow.setContent(location.content);
       location.marker.infowindow.open(map, location.marker);
       _lodash2.default.defer(function () {
-        return toggleMarkerBounceAnimation(location.marker);
+        return _util2.default.toggleMarkerBounceAnimation(location.marker);
       });
     });
   });
@@ -29785,7 +29752,6 @@ function setupMarkersForPlaces() {
   apiKey: googleApiKey
 }).then(function (googleApi) {
   map = _mapHelper2.default.initializeMap();
-  initializePlaces();
   setupMarkersForPlaces();
 
   (0, _jquery2.default)("span#arrow").click(function () {
@@ -29818,7 +29784,7 @@ function setupMarkersForPlaces() {
 
 _knockout2.default.applyBindings(placesModel);
 
-},{"./map-helper":10,"google-maps-api-loader":2,"jquery":5,"knockout":6,"lodash":7}],10:[function(require,module,exports){
+},{"./map-helper":10,"./util":11,"google-maps-api-loader":2,"jquery":5,"knockout":6,"lodash":7}],10:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -29846,5 +29812,40 @@ MapHelper.initializeMap = function () {
 };
 
 exports.default = MapHelper;
+
+},{}],11:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+/**
+ * Created by andrewc on 4/10/2017.
+ */
+var Util = {};
+var bounceTwiceAnimation = 4;
+
+/**
+ *
+ * @param marker
+ */
+Util.toggleMarkerBounceAnimation = function (marker) {
+  this.toggleMarkerAnimation(marker, bounceTwiceAnimation);
+};
+
+/**
+ *
+ * @param marker
+ * @param animation
+ */
+Util.toggleMarkerAnimation = function (marker, animation) {
+  if (marker.getAnimation()) {
+    marker.setAnimation(null);
+  } else {
+    marker.setAnimation(animation);
+  }
+};
+
+exports.default = Util;
 
 },{}]},{},[9]);

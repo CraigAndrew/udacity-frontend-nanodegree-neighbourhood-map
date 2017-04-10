@@ -7,36 +7,15 @@ import $ from 'jquery';
 import ko from 'knockout';
 import GoogleMapsApiLoader from 'google-maps-api-loader';
 import MapHelper from './map-helper';
+import Util from './util';
 
 // constant declarations
-const bounceTwiceAnimation = 4;
 const fourSquareClientId = '0FD1PHV1YKMHSMF0T1M1PFIFLWRB12EQAGRDIK5Z2WOJOVNQ';
 const fourSquareClientSecret = 'XXASVO0SW14RJKNE0ETMNNATAPQVBO0PPJA5WFNATBPW3J3L';
 const googleApiKey = 'AIzaSyC_77S5Ozh5RMPEQ98QBA9iOSHPQxZM_N8';
 const imgPath = 'src/css/img/';
 let map;
 let placesModel;
-
-/**
- *
- * @param marker
- */
-function toggleMarkerBounceAnimation(marker) {
-  toggleMarkerAnimation(marker, bounceTwiceAnimation);
-}
-
-/**
- *
- * @param marker
- * @param animation
- */
-function toggleMarkerAnimation(marker, animation) {
-  if (marker.getAnimation()) {
-    marker.setAnimation(null);
-  } else {
-    marker.setAnimation(animation);
-  }
-}
 
 /**
  *
@@ -105,7 +84,7 @@ placesModel = {
     map.panTo(place.marker.getPosition())
     place.marker.infowindow.setContent(place.content);
     place.marker.infowindow.open(map, place.marker);
-    _.defer(() => toggleMarkerBounceAnimation(place.marker));
+    _.defer(() => Util.toggleMarkerBounceAnimation(place.marker));
   },
   highlightPlace: function(place) {
     place.marker.setIcon(imgPath + 'active.png');
@@ -155,21 +134,6 @@ placesModel.search = ko.computed(function() {
   return searchResults;
 }, placesModel);
 
-/**
- *
- */
-function initializePlaces() {
-  // placesModel.locations = [
-  //   new Place('The Pavilion Shopping Center', 'shop', -29.849002300639423, 30.93577734073859),
-  //   new Place('Westville Mall', 'shop', -29.83608, 30.918399),
-  //   new Place('Kauai', 'eat', -29.83608, 30.918399),
-  //   new Place('Olive & Oil Cafe', 'eat', 29.839529871456172, 30.925247375447384),
-  //   new Place('Waxy O\'Connors', 'eat', -29.827756663602152, 30.929725103495258),
-  //   new Place('Lupa Osteria', 'eat', -29.8277474062012, 30.930414401226106),
-  //   new Place('Chez nous', 'eat', -29.836469892379846, 30.91703684659349)
-  // ];
-}
-
 function setupMarkersForPlaces() {
   _.forEach(placesModel.locations, (location) => {
     location.marker = new google.maps.Marker({
@@ -194,7 +158,7 @@ function setupMarkersForPlaces() {
       map.panTo(location.marker.getPosition());
       location.marker.infowindow.setContent(location.content);
       location.marker.infowindow.open(map, location.marker);
-      _.defer(() => toggleMarkerBounceAnimation(location.marker));
+      _.defer(() => Util.toggleMarkerBounceAnimation(location.marker));
     });
   });
 }
@@ -207,7 +171,6 @@ GoogleMapsApiLoader({
   apiKey: googleApiKey
 }).then(function (googleApi) {
   map = MapHelper.initializeMap();
-  initializePlaces();
   setupMarkersForPlaces();
 
   $("span#arrow").click(() => {
