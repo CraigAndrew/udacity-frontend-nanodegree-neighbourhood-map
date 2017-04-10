@@ -6,12 +6,10 @@ import _ from 'lodash';
 import $ from 'jquery';
 import ko from 'knockout';
 import GoogleMapsApiLoader from 'google-maps-api-loader';
+import MapHelper from './map-helper';
 
 // constant declarations
 const bounceTwiceAnimation = 4;
-const defaultLat = -29.83608;
-const defaultLng = 30.918399;
-const defaultZoomLevel = 15;
 const fourSquareClientId = '0FD1PHV1YKMHSMF0T1M1PFIFLWRB12EQAGRDIK5Z2WOJOVNQ';
 const fourSquareClientSecret = 'XXASVO0SW14RJKNE0ETMNNATAPQVBO0PPJA5WFNATBPW3J3L';
 const googleApiKey = 'AIzaSyC_77S5Ozh5RMPEQ98QBA9iOSHPQxZM_N8';
@@ -50,19 +48,6 @@ function isMobile() {
 
 /**
  *
- */
-function initializeMap() {
-  let mapOptions = {
-    zoom: defaultZoomLevel,
-    center: new google.maps.LatLng(defaultLat, defaultLng),
-    disableDefaultUI: true
-  };
-  map = new google.maps.Map(document.getElementById('map'),
-      mapOptions);
-}
-
-/**
- *
  * @param name
  * @param cat
  * @param lng
@@ -95,70 +80,6 @@ let Place = function(name, cat, lng, lat) {
       console.log('getJSON request failed! ' + textStatus);
     });
   }();
-//
-//   this.infowindow = new google.maps.InfoWindow();
-//
-//   // Assigns a marker icon color based on the category of the location.
-//   const imgPath = 'src/css/img/';
-//   switch (this.cat) {
-//     case "eat":
-//       this.icon = imgPath + 'eat.png';
-//       break;
-//     case "shop":
-//       this.icon = imgPath + 'shop.png';
-//       break;
-//     default:
-//       this.icon = imgPath + 'default.png';
-//   }
-//
-//   this.marker = new google.maps.Marker({
-//     position: new google.maps.LatLng(_this.lng, _this.lat),
-//     animation: google.maps.Animation.DROP,
-//     map,
-//     name: _this.name,
-//     icon: _this.icon
-//   });
-//
-//   // Opens the info window for the location marker.
-//   /**
-//    *
-//    */
-//   this.openInfowindow = function() {
-//     map.setCenter(_this.marker.getPosition());
-//     for (let i=0; i < placesModel.locations.length; i++) {
-//       placesModel.locations[i].infowindow.close();
-//     }
-//     map.panTo(_this.marker.getPosition())
-//     _this.infowindow.setContent(_this.content);
-//     _this.infowindow.open(map,_this.marker);
-//     _.defer(() => toggleMarkerBounceAnimation(_this.marker));
-//   };
-//
-//   /**
-//    *
-//    */
-//   this.highlightPlace = function() {
-//     _this.marker.setIcon(imgPath + 'active.png');
-//   }
-//
-//   /**
-//    *
-//    */
-//   this.unhighlightPlace = function() {
-//     switch (_this.cat) {
-//       case "eat":
-//         _this.marker.setIcon(imgPath + 'eat.png');
-//         break;
-//       case "shop":
-//         _this.marker.setIcon(imgPath + 'shop.png');
-//         break;
-//       default:
-//         _this.marker.setIcon(imgPath + 'default.png');
-//     }
-//   }
-//
-//   // Assigns a click event listener to the marker to open the info window.
-//   this.addListener = google.maps.event.addListener(_this.marker,'click', (this.openInfowindow));
 };
 
 // Contains all the locations and search function.
@@ -285,7 +206,7 @@ GoogleMapsApiLoader({
   libraries: ['places'],
   apiKey: googleApiKey
 }).then(function (googleApi) {
-  initializeMap();
+  map = MapHelper.initializeMap();
   initializePlaces();
   setupMarkersForPlaces();
 
@@ -318,8 +239,3 @@ GoogleMapsApiLoader({
 });
 
 ko.applyBindings(placesModel);
-
-// TODO: Decouple 3rd party APIs and model
-// TODO: Responsive design, mobile-first if you can
-// NICE TO HAVE: MINIFY JS, CSS etc
-// TODO: When clicking on marker highlight item in listview
