@@ -41,8 +41,8 @@ Util.isMobile = function() {
  *
  */
 Util.setupListUi = function() {
-  $("span#arrow").click(() => {
-    $("ul").slideToggle();
+  $('span#arrow').click(() => {
+    $('ul').slideToggle();
 
     if ($('span#arrow').html() === '▼') {
       $('span#arrow').html('▲');
@@ -54,13 +54,13 @@ Util.setupListUi = function() {
   });
   $( window ).resize(() => {
     if (Util.isMobile()) {
-      $("ul").slideUp();
+      $('ul').slideUp();
     } else {
-      $("ul").slideDown();
+      $('ul').slideDown();
     }
   });
 
-  $("ul").slideDown();
+  $('ul').slideDown();
 }
 
 Util.fetchInfo = function(place) {
@@ -73,7 +73,7 @@ Util.fetchInfo = function(place) {
     const formattedAddress = location.formattedAddress;
     place.info = `<h2>${venueName}</h2><h3>${categoryName}</h3><h4>${formattedAddress}</h4>`;
   }).fail((jqXHR, textStatus, errorThrown) => {
-    console.log('getJSON request failed! ' + textStatus);
+    place.info = 'Problem with foursquare. Please try again later';
   });
 }
 

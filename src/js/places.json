@@ -1,0 +1,44 @@
+[
+  {
+    "name": "The Pavilion Shopping Center",
+    "cat": "shop",
+    "lng": -29.849002300639423,
+    "lat": 30.93577734073859
+  },
+  {
+    "name": "Westville Mall",
+    "cat": "shop",
+    "lng": -29.83608,
+    "lat": 30.918399
+  },
+  {
+    "name": "Kauai",
+    "cat": "eat",
+    "lng": -29.83608,
+    "lat": 30.918399
+  },
+  {
+    "name": "Olive & Oil Cafe",
+    "cat": "eat",
+    "lng": 29.839529871456172,
+    "lat": 30.925247375447384
+  },
+  {
+    "name": "Waxy O'Connors",
+    "cat": "eat",
+    "lng": -29.827756663602152,
+    "lat": 30.929725103495258
+  },
+  {
+    "name": "Lupa Osteria",
+    "cat": "eat",
+    "lng": -29.8277474062012,
+    "lat": 30.930414401226106
+  },
+  {
+    "name": "Chez nous",
+    "cat": "eat",
+    "lng": -29.836469892379846,
+    "lat": 30.91703684659349
+  }
+]

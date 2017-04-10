@@ -29561,9 +29561,6 @@ process.umask = function() { return 0; };
 
 },{}],9:[function(require,module,exports){
 'use strict';
-// // Entry Point for application.
-//
-// imports
 
 var _lodash = require('lodash');
 
@@ -29585,6 +29582,10 @@ var _util = require('./util');
 
 var _util2 = _interopRequireDefault(_util);
 
+var _places = require('./places.json');
+
+var _places2 = _interopRequireDefault(_places);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 // constant declarations
@@ -29593,6 +29594,22 @@ var map = void 0;
 var viewModel = void 0;
 
 /**
+ * Entry Point for application.
+ */
+(0, _googleMapsApiLoader2.default)({
+  libraries: ['places'],
+  apiKey: googleApiKey
+}).then(function () {
+  map = _mapHelper2.default.initializeMap();
+  setupMarkersForPlaces();
+  _util2.default.setupListUi();
+}, function (err) {
+  console.error('error for developer', err);
+  alert('Problem loading Google Maps library. Please try again later');
+});
+
+/**
+ * Place model constructor to create a place object based on place info and google marker properties
  *
  * @param name
  * @param cat
@@ -29608,6 +29625,11 @@ var Place = function Place(name, cat, lng, lat) {
   _util2.default.fetchInfo(this);
 };
 
+/**
+ * Display GoogleMaps InfoWindow for place with place info from 3rd party service
+ *
+ * @param place
+ */
 var showInfoWindow = function showInfoWindow(place) {
   map.setCenter(place.marker.getPosition());
   _lodash2.default.forEach(viewModel.places, function (_ref) {
@@ -29625,25 +29647,36 @@ var showInfoWindow = function showInfoWindow(place) {
   });
 };
 
-// Contains all the places and search function.
 viewModel = {
-  places: [new Place('The Pavilion Shopping Center', 'shop', -29.849002300639423, 30.93577734073859), new Place('Westville Mall', 'shop', -29.83608, 30.918399), new Place('Kauai', 'eat', -29.83608, 30.918399), new Place('Olive & Oil Cafe', 'eat', 29.839529871456172, 30.925247375447384), new Place('Waxy O\'Connors', 'eat', -29.827756663602152, 30.929725103495258), new Place('Lupa Osteria', 'eat', -29.8277474062012, 30.930414401226106), new Place('Chez nous', 'eat', -29.836469892379846, 30.91703684659349)],
+  highlightPlace: _util2.default.highlightPlace,
+  places: setupPlaces(),
   query: _knockout2.default.observable(''),
   showInfoWindow: showInfoWindow,
-  highlightPlace: _util2.default.highlightPlace,
   unhighlightPlace: _util2.default.unhighlightPlace
 };
 
+function setupPlaces() {
+  var placesArr = [];
+  _lodash2.default.forEach(_places2.default, function (_ref2) {
+    var name = _ref2.name,
+        cat = _ref2.cat,
+        lng = _ref2.lng,
+        lat = _ref2.lat;
+
+    placesArr.push(new Place(name, cat, lng, lat));
+  });
+  return placesArr;
+}
+
 /**
- *
+ * Search function for input search query. Filters down list of places shown in list as well as markers visible.
  */
-// Search function for filtering through the list of places based on the name of the location.
 viewModel.search = _knockout2.default.computed(function () {
   var _this = this;
   var search = _this.query().toLowerCase();
-  var searchResults = _knockout2.default.utils.arrayFilter(_this.places, function (_ref2) {
-    var name = _ref2.name,
-        marker = _ref2.marker;
+  var searchResults = _knockout2.default.utils.arrayFilter(_this.places, function (_ref3) {
+    var name = _ref3.name,
+        marker = _ref3.marker;
 
     var match = name.toLowerCase().indexOf(search) >= 0;
     if (!match) {
@@ -29665,53 +29698,42 @@ viewModel.search = _knockout2.default.computed(function () {
   return searchResults;
 }, viewModel);
 
+/**
+ * Sets up the Google Maps markers on the map for each place.
+ */
 function setupMarkersForPlaces() {
-  _lodash2.default.forEach(viewModel.places, function (location) {
-    location.marker = new google.maps.Marker({
-      position: new google.maps.LatLng(location.lng, location.lat),
+  _lodash2.default.forEach(viewModel.places, function (place) {
+    place.marker = new google.maps.Marker({
+      position: new google.maps.LatLng(place.lng, place.lat),
       animation: google.maps.Animation.DROP,
       map: map,
-      name: location.name,
-      icon: location.icon
+      name: place.name,
+      icon: place.icon
     });
 
-    location.marker.infoWindow = new google.maps.InfoWindow();
+    place.marker.infoWindow = new google.maps.InfoWindow();
+    place.marker.addListener = google.maps.event.addListener(place.marker, 'click', function () {
+      map.setCenter(place.marker.getPosition());
+      _lodash2.default.forEach(viewModel.places, function (_ref4) {
+        var infoWindow = _ref4.marker.infoWindow;
 
-    // Assigns a click event listener to the marker to open the info window.
-    location.marker.addListener = google.maps.event.addListener(location.marker, 'click', function () {
-      map.setCenter(location.marker.getPosition());
-      for (var i = 0; i < viewModel.places.length; i++) {
-        if (viewModel.places[i].marker.infoWindow) {
-          viewModel.places[i].marker.infoWindow.close();
+        if (infoWindow) {
+          infoWindow.close();
         }
-      }
-      map.panTo(location.marker.getPosition());
-      location.marker.infoWindow.setContent(location.info);
-      location.marker.infoWindow.open(map, location.marker);
+      });
+      map.panTo(place.marker.getPosition());
+      place.marker.infoWindow.setContent(place.info);
+      place.marker.infoWindow.open(map, place.marker);
       _lodash2.default.defer(function () {
-        return _util2.default.toggleMarkerBounceAnimation(location.marker);
+        return _util2.default.toggleMarkerBounceAnimation(place.marker);
       });
     });
   });
 }
 
-/**
- *
- */
-(0, _googleMapsApiLoader2.default)({
-  libraries: ['places'],
-  apiKey: googleApiKey
-}).then(function (googleApi) {
-  map = _mapHelper2.default.initializeMap();
-  setupMarkersForPlaces();
-  _util2.default.setupListUi();
-}, function (err) {
-  console.error(err);
-});
-
 _knockout2.default.applyBindings(viewModel);
 
-},{"./map-helper":10,"./util":11,"google-maps-api-loader":2,"knockout":6,"lodash":7}],10:[function(require,module,exports){
+},{"./map-helper":10,"./places.json":11,"./util":12,"google-maps-api-loader":2,"knockout":6,"lodash":7}],10:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -29747,6 +29769,52 @@ MapHelper.initializeMap = function () {
 exports.default = MapHelper;
 
 },{}],11:[function(require,module,exports){
+module.exports=[
+  {
+    "name": "The Pavilion Shopping Center",
+    "cat": "shop",
+    "lng": -29.849002300639423,
+    "lat": 30.93577734073859
+  },
+  {
+    "name": "Westville Mall",
+    "cat": "shop",
+    "lng": -29.83608,
+    "lat": 30.918399
+  },
+  {
+    "name": "Kauai",
+    "cat": "eat",
+    "lng": -29.83608,
+    "lat": 30.918399
+  },
+  {
+    "name": "Olive & Oil Cafe",
+    "cat": "eat",
+    "lng": 29.839529871456172,
+    "lat": 30.925247375447384
+  },
+  {
+    "name": "Waxy O'Connors",
+    "cat": "eat",
+    "lng": -29.827756663602152,
+    "lat": 30.929725103495258
+  },
+  {
+    "name": "Lupa Osteria",
+    "cat": "eat",
+    "lng": -29.8277474062012,
+    "lat": 30.930414401226106
+  },
+  {
+    "name": "Chez nous",
+    "cat": "eat",
+    "lng": -29.836469892379846,
+    "lat": 30.91703684659349
+  }
+]
+
+},{}],12:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -29805,8 +29873,8 @@ Util.isMobile = function () {
  *
  */
 Util.setupListUi = function () {
-  (0, _jquery2.default)("span#arrow").click(function () {
-    (0, _jquery2.default)("ul").slideToggle();
+  (0, _jquery2.default)('span#arrow').click(function () {
+    (0, _jquery2.default)('ul').slideToggle();
 
     if ((0, _jquery2.default)('span#arrow').html() === '▼') {
       (0, _jquery2.default)('span#arrow').html('▲');
@@ -29818,13 +29886,13 @@ Util.setupListUi = function () {
   });
   (0, _jquery2.default)(window).resize(function () {
     if (Util.isMobile()) {
-      (0, _jquery2.default)("ul").slideUp();
+      (0, _jquery2.default)('ul').slideUp();
     } else {
-      (0, _jquery2.default)("ul").slideDown();
+      (0, _jquery2.default)('ul').slideDown();
     }
   });
 
-  (0, _jquery2.default)("ul").slideDown();
+  (0, _jquery2.default)('ul').slideDown();
 };
 
 Util.fetchInfo = function (place) {
@@ -29840,7 +29908,7 @@ Util.fetchInfo = function (place) {
     var formattedAddress = location.formattedAddress;
     place.info = '<h2>' + venueName + '</h2><h3>' + categoryName + '</h3><h4>' + formattedAddress + '</h4>';
   }).fail(function (jqXHR, textStatus, errorThrown) {
-    console.log('getJSON request failed! ' + textStatus);
+    place.info = 'Problem with foursquare. Please try again later';
   });
 };
 

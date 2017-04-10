@@ -1,12 +1,10 @@
 'use strict';
-// // Entry Point for application.
-//
-// imports
 import _ from 'lodash';
 import ko from 'knockout';
 import GoogleMapsApiLoader from 'google-maps-api-loader';
 import MapHelper from './map-helper';
 import Util from './util';
+import Places from './places.json';
 
 // constant declarations
 const googleApiKey = 'AIzaSyC_77S5Ozh5RMPEQ98QBA9iOSHPQxZM_N8';
@@ -14,6 +12,22 @@ let map;
 let viewModel;
 
 /**
+ * Entry Point for application.
+ */
+GoogleMapsApiLoader({
+  libraries: ['places'],
+  apiKey: googleApiKey
+}).then(() => {
+  map = MapHelper.initializeMap();
+  setupMarkersForPlaces();
+  Util.setupListUi();
+}, (err) => {
+  console.error('error for developer', err);
+  alert('Problem loading Google Maps library. Please try again later');
+});
+
+/**
+ * Place model constructor to create a place object based on place info and google marker properties
  *
  * @param name
  * @param cat
@@ -29,6 +43,11 @@ const Place = function(name, cat, lng, lat) {
   Util.fetchInfo(this);
 };
 
+/**
+ * Display GoogleMaps InfoWindow for place with place info from 3rd party service
+ *
+ * @param place
+ */
 const showInfoWindow = function(place) {
   map.setCenter(place.marker.getPosition());
   _.forEach(viewModel.places, ({ marker: { infoWindow } }) => {
@@ -42,27 +61,25 @@ const showInfoWindow = function(place) {
   _.defer(() => Util.toggleMarkerBounceAnimation(place.marker));
 }
 
-// Contains all the places and search function.
 viewModel = {
-  places: [
-    new Place('The Pavilion Shopping Center', 'shop', -29.849002300639423, 30.93577734073859),
-    new Place('Westville Mall', 'shop', -29.83608, 30.918399),
-    new Place('Kauai', 'eat', -29.83608, 30.918399),
-    new Place('Olive & Oil Cafe', 'eat', 29.839529871456172, 30.925247375447384),
-    new Place('Waxy O\'Connors', 'eat', -29.827756663602152, 30.929725103495258),
-    new Place('Lupa Osteria', 'eat', -29.8277474062012, 30.930414401226106),
-    new Place('Chez nous', 'eat', -29.836469892379846, 30.91703684659349)
-  ],
+  highlightPlace: Util.highlightPlace,
+  places: setupPlaces(),
   query: ko.observable(''),
   showInfoWindow,
-  highlightPlace: Util.highlightPlace,
   unhighlightPlace: Util.unhighlightPlace
 };
 
+function setupPlaces() {
+  const placesArr = [];
+  _.forEach(Places, ({ name, cat, lng, lat }) => {
+    placesArr.push(new Place(name, cat, lng, lat))
+  });
+  return placesArr;
+}
+
 /**
- *
+ * Search function for input search query. Filters down list of places shown in list as well as markers visible.
  */
-// Search function for filtering through the list of places based on the name of the location.
 viewModel.search = ko.computed(function() {
   const _this = this;
   const search = _this.query().toLowerCase();
@@ -87,46 +104,33 @@ viewModel.search = ko.computed(function() {
   return searchResults;
 }, viewModel);
 
+/**
+ * Sets up the Google Maps markers on the map for each place.
+ */
 function setupMarkersForPlaces() {
-  _.forEach(viewModel.places, (location) => {
-    location.marker = new google.maps.Marker({
-      position: new google.maps.LatLng(location.lng, location.lat),
+  _.forEach(viewModel.places, (place) => {
+    place.marker = new google.maps.Marker({
+      position: new google.maps.LatLng(place.lng, place.lat),
       animation: google.maps.Animation.DROP,
       map,
-      name: location.name,
-      icon: location.icon
+      name: place.name,
+      icon: place.icon
     });
 
-    location.marker.infoWindow = new google.maps.InfoWindow();
-
-    // Assigns a click event listener to the marker to open the info window.
-    location.marker.addListener = google.maps.event.addListener(location.marker, 'click', () => {
-      map.setCenter(location.marker.getPosition());
-      for (let i=0; i < viewModel.places.length; i++) {
-        if (viewModel.places[i].marker.infoWindow) {
-          viewModel.places[i].marker.infoWindow.close();
+    place.marker.infoWindow = new google.maps.InfoWindow();
+    place.marker.addListener = google.maps.event.addListener(place.marker, 'click', () => {
+      map.setCenter(place.marker.getPosition());
+      _.forEach(viewModel.places, ({ marker: { infoWindow } }) => {
+        if (infoWindow) {
+          infoWindow.close();
         }
-      }
-      map.panTo(location.marker.getPosition());
-      location.marker.infoWindow.setContent(location.info);
-      location.marker.infoWindow.open(map, location.marker);
-      _.defer(() => Util.toggleMarkerBounceAnimation(location.marker));
+      });
+      map.panTo(place.marker.getPosition());
+      place.marker.infoWindow.setContent(place.info);
+      place.marker.infoWindow.open(map, place.marker);
+      _.defer(() => Util.toggleMarkerBounceAnimation(place.marker));
     });
   });
 }
-
-/**
- *
- */
-GoogleMapsApiLoader({
-  libraries: ['places'],
-  apiKey: googleApiKey
-}).then((googleApi) => {
-  map = MapHelper.initializeMap();
-  setupMarkersForPlaces();
-  Util.setupListUi();
-}, (err) => {
-  console.error(err);
-});
 
 ko.applyBindings(viewModel);
