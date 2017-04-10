@@ -29565,6 +29565,8 @@ process.umask = function() { return 0; };
 //
 // imports
 
+var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
+
 var _lodash = require('lodash');
 
 var _lodash2 = _interopRequireDefault(_lodash);
@@ -29597,16 +29599,7 @@ var fourSquareClientSecret = 'XXASVO0SW14RJKNE0ETMNNATAPQVBO0PPJA5WFNATBPW3J3L';
 var googleApiKey = 'AIzaSyC_77S5Ozh5RMPEQ98QBA9iOSHPQxZM_N8';
 var imgPath = 'src/css/img/';
 var map = void 0;
-var placesModel = void 0;
-
-/**
- *
- * @returns {boolean}
- */
-function isMobile() {
-  return (/Mobi/.test(navigator.userAgent)
-  );
-}
+var viewModel = void 0;
 
 /**
  *
@@ -29616,7 +29609,6 @@ function isMobile() {
  * @param lat
  * @constructor
  */
-// Place Class completely builds everything needed for each location marker.
 var Place = function Place(name, cat, lng, lat) {
   var _this = this;
   this.name = name;
@@ -29624,7 +29616,6 @@ var Place = function Place(name, cat, lng, lat) {
   this.lat = lat;
   this.cat = cat;
 
-  // getContent function retrieves 5 most recent tips from foursquare for the marker location.
   /**
    *
    */
@@ -29632,9 +29623,9 @@ var Place = function Place(name, cat, lng, lat) {
     var url = 'https://api.foursquare.com/v2/venues/search?client_id=' + fourSquareClientId + '&client_secret=' + fourSquareClientSecret + '&v=20130815&ll=' + _this.lng + ',' + _this.lat + '&query=\'' + _this.name + '\'&limit=1';
 
     _jquery2.default.getJSON(url).done(function (_ref) {
-      var response = _ref.response;
+      var _ref$response$venues = _slicedToArray(_ref.response.venues, 1),
+          venue = _ref$response$venues[0];
 
-      var venue = response.venues[0];
       var venueName = venue.name;
       var categoryName = venue.categories[0].name;
       var location = venue.location;
@@ -29646,16 +29637,15 @@ var Place = function Place(name, cat, lng, lat) {
   }();
 };
 
-// Contains all the locations and search function.
-placesModel = {
-  locations: [new Place('The Pavilion Shopping Center', 'shop', -29.849002300639423, 30.93577734073859), new Place('Westville Mall', 'shop', -29.83608, 30.918399), new Place('Kauai', 'eat', -29.83608, 30.918399), new Place('Olive & Oil Cafe', 'eat', 29.839529871456172, 30.925247375447384), new Place('Waxy O\'Connors', 'eat', -29.827756663602152, 30.929725103495258), new Place('Lupa Osteria', 'eat', -29.8277474062012, 30.930414401226106), new Place('Chez nous', 'eat', -29.836469892379846, 30.91703684659349)],
+// Contains all the places and search function.
+viewModel = {
+  places: [new Place('The Pavilion Shopping Center', 'shop', -29.849002300639423, 30.93577734073859), new Place('Westville Mall', 'shop', -29.83608, 30.918399), new Place('Kauai', 'eat', -29.83608, 30.918399), new Place('Olive & Oil Cafe', 'eat', 29.839529871456172, 30.925247375447384), new Place('Waxy O\'Connors', 'eat', -29.827756663602152, 30.929725103495258), new Place('Lupa Osteria', 'eat', -29.8277474062012, 30.930414401226106), new Place('Chez nous', 'eat', -29.836469892379846, 30.91703684659349)],
   query: _knockout2.default.observable(''),
   showInfoWindow: function showInfoWindow(place) {
-    console.log('listClickCallback4', place.marker);
     map.setCenter(place.marker.getPosition());
-    for (var i = 0; i < placesModel.locations.length; i++) {
-      if (placesModel.locations[i].marker.infowindow) {
-        placesModel.locations[i].marker.infowindow.close();
+    for (var i = 0; i < viewModel.places.length; i++) {
+      if (viewModel.places[i].marker.infowindow) {
+        viewModel.places[i].marker.infowindow.close();
       }
     }
     map.panTo(place.marker.getPosition());
@@ -29685,12 +29675,11 @@ placesModel = {
 /**
  *
  */
-// Search function for filtering through the list of locations based on the name of the location.
-placesModel.search = _knockout2.default.computed(function () {
+// Search function for filtering through the list of places based on the name of the location.
+viewModel.search = _knockout2.default.computed(function () {
   var _this = this;
-  console.log('search', this);
-  var search = this.query().toLowerCase();
-  var searchResults = _knockout2.default.utils.arrayFilter(_this.locations, function (location) {
+  var search = _this.query().toLowerCase();
+  var searchResults = _knockout2.default.utils.arrayFilter(_this.places, function (location) {
     var match = location.name.toLowerCase().indexOf(search) >= 0;
     if (!match) {
       if (location.marker) {
@@ -29704,17 +29693,15 @@ placesModel.search = _knockout2.default.computed(function () {
     return match;
   });
 
-  console.log('searchResults', searchResults);
   if (_lodash2.default.isEmpty(searchResults)) {
-    searchResults = placesModel.locations;
-    console.log('searchResults default', searchResults);
+    searchResults = viewModel.places;
   }
 
   return searchResults;
-}, placesModel);
+}, viewModel);
 
 function setupMarkersForPlaces() {
-  _lodash2.default.forEach(placesModel.locations, function (location) {
+  _lodash2.default.forEach(viewModel.places, function (location) {
     location.marker = new google.maps.Marker({
       position: new google.maps.LatLng(location.lng, location.lat),
       animation: google.maps.Animation.DROP,
@@ -29723,15 +29710,14 @@ function setupMarkersForPlaces() {
       icon: location.icon
     });
 
-    console.log('marker1 in loop', location.marker);
     location.marker.infowindow = new google.maps.InfoWindow();
 
     // Assigns a click event listener to the marker to open the info window.
     location.marker.addListener = google.maps.event.addListener(location.marker, 'click', function () {
       map.setCenter(location.marker.getPosition());
-      for (var i = 0; i < placesModel.locations.length; i++) {
-        if (placesModel.locations[i].marker.infowindow) {
-          placesModel.locations[i].marker.infowindow.close();
+      for (var i = 0; i < viewModel.places.length; i++) {
+        if (viewModel.places[i].marker.infowindow) {
+          viewModel.places[i].marker.infowindow.close();
         }
       }
       map.panTo(location.marker.getPosition());
@@ -29753,36 +29739,12 @@ function setupMarkersForPlaces() {
 }).then(function (googleApi) {
   map = _mapHelper2.default.initializeMap();
   setupMarkersForPlaces();
-
-  (0, _jquery2.default)("span#arrow").click(function () {
-    console.log('click');
-    console.log((0, _jquery2.default)('span#arrow').html());
-    (0, _jquery2.default)("ul").slideToggle();
-
-    if ((0, _jquery2.default)('span#arrow').html() === '▼') {
-      (0, _jquery2.default)('span#arrow').html('▲');
-      (0, _jquery2.default)('div.search-area').css({ 'width': '100%' });
-    } else {
-      (0, _jquery2.default)('span#arrow').html('▼');
-      (0, _jquery2.default)('div.search-area').css({ 'width': 'auto' });
-    }
-  });
-  (0, _jquery2.default)(window).resize(function () {
-    console.log('window resized');
-    if (isMobile()) {
-      (0, _jquery2.default)("ul").slideUp();
-    } else {
-      (0, _jquery2.default)("ul").slideDown();
-    }
-  });
-
-  console.log('okay slidedown');
-  (0, _jquery2.default)("ul").slideDown();
+  _util2.default.setupListUi();
 }, function (err) {
   console.error(err);
 });
 
-_knockout2.default.applyBindings(placesModel);
+_knockout2.default.applyBindings(viewModel);
 
 },{"./map-helper":10,"./util":11,"google-maps-api-loader":2,"jquery":5,"knockout":6,"lodash":7}],10:[function(require,module,exports){
 'use strict';
@@ -29808,7 +29770,13 @@ MapHelper.initializeMap = function () {
     center: new google.maps.LatLng(defaultLat, defaultLng),
     disableDefaultUI: true
   };
-  return new google.maps.Map(document.getElementById('map'), mapOptions);
+  var map = new google.maps.Map(document.getElementById('map'), mapOptions);
+
+  if (map) {
+    return map;
+  } else {
+    alert('Google failed to load');
+  }
 };
 
 exports.default = MapHelper;
@@ -29819,10 +29787,18 @@ exports.default = MapHelper;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+
+var _jquery = require("jquery");
+
+var _jquery2 = _interopRequireDefault(_jquery);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
 /**
  * Created by andrewc on 4/10/2017.
  */
 var Util = {};
+
 var bounceTwiceAnimation = 4;
 
 /**
@@ -29846,6 +29822,41 @@ Util.toggleMarkerAnimation = function (marker, animation) {
   }
 };
 
+/**
+ *
+ * @returns {boolean}
+ */
+Util.isMobile = function () {
+  return (/Mobi/.test(navigator.userAgent)
+  );
+};
+
+/**
+ *
+ */
+Util.setupListUi = function () {
+  (0, _jquery2.default)("span#arrow").click(function () {
+    (0, _jquery2.default)("ul").slideToggle();
+
+    if ((0, _jquery2.default)('span#arrow').html() === '▼') {
+      (0, _jquery2.default)('span#arrow').html('▲');
+      (0, _jquery2.default)('div.search-area').css({ 'width': '100%' });
+    } else {
+      (0, _jquery2.default)('span#arrow').html('▼');
+      (0, _jquery2.default)('div.search-area').css({ 'width': 'auto' });
+    }
+  });
+  (0, _jquery2.default)(window).resize(function () {
+    if (Util.isMobile()) {
+      (0, _jquery2.default)("ul").slideUp();
+    } else {
+      (0, _jquery2.default)("ul").slideDown();
+    }
+  });
+
+  (0, _jquery2.default)("ul").slideDown();
+};
+
 exports.default = Util;
 
-},{}]},{},[9]);
+},{"jquery":5}]},{},[9]);

@@ -16,7 +16,13 @@ MapHelper.initializeMap = function() {
     center: new google.maps.LatLng(defaultLat, defaultLng),
     disableDefaultUI: true
   };
-  return new google.maps.Map(document.getElementById('map'), mapOptions);
+  const map =  new google.maps.Map(document.getElementById('map'), mapOptions);
+
+  if (map) {
+    return map;
+  } else {
+    alert('Google failed to load');
+  }
 }
 
 export default MapHelper;
