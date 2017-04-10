@@ -17,7 +17,6 @@ const fourSquareClientSecret = 'XXASVO0SW14RJKNE0ETMNNATAPQVBO0PPJA5WFNATBPW3J3L
 const googleApiKey = 'AIzaSyC_77S5Ozh5RMPEQ98QBA9iOSHPQxZM_N8';
 let map;
 let placesModel;
-let infowindow;
 
 /**
  *
@@ -181,19 +180,24 @@ placesModel = {
 // Search function for filtering through the list of locations based on the name of the location.
 placesModel.search = ko.computed(function() {
   const _this = this;
+  console.log('search', this);
   const search = this.query().toLowerCase();
   let searchResults = ko.utils.arrayFilter(_this.locations, function(location) {
     const match =  location.name.toLowerCase().indexOf(search) >= 0;
     if (!match) {
-      // location.marker.setVisible(false);
+      if (location.marker) {
+        location.marker.setVisible(false);
+      }
     } else {
-      // location.marker.setVisible(true);
+      if (location.marker) {
+        location.marker.setVisible(true);
+      }
     }
     return match;
   });
 
   console.log('searchResults', searchResults);
-  if (_.isEmpty) {
+  if (_.isEmpty(searchResults)) {
     searchResults = placesModel.locations;
     console.log('searchResults default', searchResults);
   }

@@ -29593,7 +29593,6 @@ var fourSquareClientSecret = 'XXASVO0SW14RJKNE0ETMNNATAPQVBO0PPJA5WFNATBPW3J3L';
 var googleApiKey = 'AIzaSyC_77S5Ozh5RMPEQ98QBA9iOSHPQxZM_N8';
 var map = void 0;
 var placesModel = void 0;
-var infowindow = void 0;
 
 /**
  *
@@ -29751,19 +29750,24 @@ placesModel = {
 // Search function for filtering through the list of locations based on the name of the location.
 placesModel.search = _knockout2.default.computed(function () {
   var _this = this;
+  console.log('search', this);
   var search = this.query().toLowerCase();
   var searchResults = _knockout2.default.utils.arrayFilter(_this.locations, function (location) {
     var match = location.name.toLowerCase().indexOf(search) >= 0;
     if (!match) {
-      // location.marker.setVisible(false);
-    } else {
-        // location.marker.setVisible(true);
+      if (location.marker) {
+        location.marker.setVisible(false);
       }
+    } else {
+      if (location.marker) {
+        location.marker.setVisible(true);
+      }
+    }
     return match;
   });
 
   console.log('searchResults', searchResults);
-  if (_lodash2.default.isEmpty) {
+  if (_lodash2.default.isEmpty(searchResults)) {
     searchResults = placesModel.locations;
     console.log('searchResults default', searchResults);
   }
