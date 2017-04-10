@@ -4,6 +4,8 @@
 const Util = {};
 import $ from 'jquery';
 const bounceTwiceAnimation = 4;
+const fourSquareClientId = '0FD1PHV1YKMHSMF0T1M1PFIFLWRB12EQAGRDIK5Z2WOJOVNQ';
+const fourSquareClientSecret = 'XXASVO0SW14RJKNE0ETMNNATAPQVBO0PPJA5WFNATBPW3J3L';
 
 /**
  *
@@ -58,6 +60,20 @@ Util.setupListUi = function() {
   });
 
   $("ul").slideDown();
+}
+
+Util.fetchInfo = function(place) {
+  const url = `https://api.foursquare.com/v2/venues/search?client_id=${fourSquareClientId}&client_secret=${fourSquareClientSecret}&v=20130815&ll=${place.lng},${place.lat}&query=\'${place.name}\'&limit=1`;
+
+  $.getJSON(url).done(({ response: { venues: [venue] }}) => {
+    const venueName = venue.name;
+    const categoryName = venue.categories[0].name;
+    const location = venue.location;
+    const formattedAddress = location.formattedAddress;
+    place.info = `<h2>${venueName}</h2><h3>${categoryName}</h3><h4>${formattedAddress}</h4>`;
+  }).fail((jqXHR, textStatus, errorThrown) => {
+    console.log('getJSON request failed! ' + textStatus);
+  });
 }
 
 export default Util;

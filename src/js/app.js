@@ -10,8 +10,6 @@ import MapHelper from './map-helper';
 import Util from './util';
 
 // constant declarations
-const fourSquareClientId = '0FD1PHV1YKMHSMF0T1M1PFIFLWRB12EQAGRDIK5Z2WOJOVNQ';
-const fourSquareClientSecret = 'XXASVO0SW14RJKNE0ETMNNATAPQVBO0PPJA5WFNATBPW3J3L';
 const googleApiKey = 'AIzaSyC_77S5Ozh5RMPEQ98QBA9iOSHPQxZM_N8';
 const imgPath = 'src/css/img/';
 let map;
@@ -26,28 +24,11 @@ let viewModel;
  * @constructor
  */
 let Place = function(name, cat, lng, lat) {
-  let _this = this;
   this.name = name;
   this.lng = lng;
   this.lat = lat;
   this.cat = cat;
-
-  /**
-   *
-   */
-  this.getContent = function() {
-    const url = `https://api.foursquare.com/v2/venues/search?client_id=${fourSquareClientId}&client_secret=${fourSquareClientSecret}&v=20130815&ll=${_this.lng},${_this.lat}&query=\'${_this.name}\'&limit=1`;
-
-    $.getJSON(url).done(({ response: { venues: [venue] }}) => {
-      const venueName = venue.name;
-      const categoryName = venue.categories[0].name;
-      const location = venue.location;
-      const formattedAddress = location.formattedAddress;
-      _this.content = `<h2>${venueName}</h2><h3>${categoryName}</h3><h4>${formattedAddress}</h4>`;
-    }).fail((jqXHR, textStatus, errorThrown) => {
-      console.log('getJSON request failed! ' + textStatus);
-    });
-  }();
+  Util.fetchInfo(this);
 };
 
 // Contains all the places and search function.
@@ -70,7 +51,7 @@ viewModel = {
       }
     }
     map.panTo(place.marker.getPosition())
-    place.marker.infowindow.setContent(place.content);
+    place.marker.infowindow.setContent(place.info);
     place.marker.infowindow.open(map, place.marker);
     _.defer(() => Util.toggleMarkerBounceAnimation(place.marker));
   },

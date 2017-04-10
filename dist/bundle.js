@@ -29565,8 +29565,6 @@ process.umask = function() { return 0; };
 //
 // imports
 
-var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
-
 var _lodash = require('lodash');
 
 var _lodash2 = _interopRequireDefault(_lodash);
@@ -29594,8 +29592,6 @@ var _util2 = _interopRequireDefault(_util);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 // constant declarations
-var fourSquareClientId = '0FD1PHV1YKMHSMF0T1M1PFIFLWRB12EQAGRDIK5Z2WOJOVNQ';
-var fourSquareClientSecret = 'XXASVO0SW14RJKNE0ETMNNATAPQVBO0PPJA5WFNATBPW3J3L';
 var googleApiKey = 'AIzaSyC_77S5Ozh5RMPEQ98QBA9iOSHPQxZM_N8';
 var imgPath = 'src/css/img/';
 var map = void 0;
@@ -29610,31 +29606,11 @@ var viewModel = void 0;
  * @constructor
  */
 var Place = function Place(name, cat, lng, lat) {
-  var _this = this;
   this.name = name;
   this.lng = lng;
   this.lat = lat;
   this.cat = cat;
-
-  /**
-   *
-   */
-  this.getContent = function () {
-    var url = 'https://api.foursquare.com/v2/venues/search?client_id=' + fourSquareClientId + '&client_secret=' + fourSquareClientSecret + '&v=20130815&ll=' + _this.lng + ',' + _this.lat + '&query=\'' + _this.name + '\'&limit=1';
-
-    _jquery2.default.getJSON(url).done(function (_ref) {
-      var _ref$response$venues = _slicedToArray(_ref.response.venues, 1),
-          venue = _ref$response$venues[0];
-
-      var venueName = venue.name;
-      var categoryName = venue.categories[0].name;
-      var location = venue.location;
-      var formattedAddress = location.formattedAddress;
-      _this.content = '<h2>' + venueName + '</h2><h3>' + categoryName + '</h3><h4>' + formattedAddress + '</h4>';
-    }).fail(function (jqXHR, textStatus, errorThrown) {
-      console.log('getJSON request failed! ' + textStatus);
-    });
-  }();
+  _util2.default.fetchInfo(this);
 };
 
 // Contains all the places and search function.
@@ -29649,7 +29625,7 @@ viewModel = {
       }
     }
     map.panTo(place.marker.getPosition());
-    place.marker.infowindow.setContent(place.content);
+    place.marker.infowindow.setContent(place.info);
     place.marker.infowindow.open(map, place.marker);
     _lodash2.default.defer(function () {
       return _util2.default.toggleMarkerBounceAnimation(place.marker);
@@ -29782,13 +29758,15 @@ MapHelper.initializeMap = function () {
 exports.default = MapHelper;
 
 },{}],11:[function(require,module,exports){
-"use strict";
+'use strict';
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _jquery = require("jquery");
+var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
+
+var _jquery = require('jquery');
 
 var _jquery2 = _interopRequireDefault(_jquery);
 
@@ -29800,6 +29778,8 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 var Util = {};
 
 var bounceTwiceAnimation = 4;
+var fourSquareClientId = '0FD1PHV1YKMHSMF0T1M1PFIFLWRB12EQAGRDIK5Z2WOJOVNQ';
+var fourSquareClientSecret = 'XXASVO0SW14RJKNE0ETMNNATAPQVBO0PPJA5WFNATBPW3J3L';
 
 /**
  *
@@ -29855,6 +29835,23 @@ Util.setupListUi = function () {
   });
 
   (0, _jquery2.default)("ul").slideDown();
+};
+
+Util.fetchInfo = function (place) {
+  var url = 'https://api.foursquare.com/v2/venues/search?client_id=' + fourSquareClientId + '&client_secret=' + fourSquareClientSecret + '&v=20130815&ll=' + place.lng + ',' + place.lat + '&query=\'' + place.name + '\'&limit=1';
+
+  _jquery2.default.getJSON(url).done(function (_ref) {
+    var _ref$response$venues = _slicedToArray(_ref.response.venues, 1),
+        venue = _ref$response$venues[0];
+
+    var venueName = venue.name;
+    var categoryName = venue.categories[0].name;
+    var location = venue.location;
+    var formattedAddress = location.formattedAddress;
+    place.info = '<h2>' + venueName + '</h2><h3>' + categoryName + '</h3><h4>' + formattedAddress + '</h4>';
+  }).fail(function (jqXHR, textStatus, errorThrown) {
+    console.log('getJSON request failed! ' + textStatus);
+  });
 };
 
 exports.default = Util;
