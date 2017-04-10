@@ -29697,7 +29697,7 @@ function setupMarkersForPlaces() {
         }
       }
       map.panTo(location.marker.getPosition());
-      location.marker.infowindow.setContent(location.content);
+      location.marker.infowindow.setContent(location.info);
       location.marker.infowindow.open(map, location.marker);
       _lodash2.default.defer(function () {
         return _util2.default.toggleMarkerBounceAnimation(location.marker);

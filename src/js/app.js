@@ -121,7 +121,7 @@ function setupMarkersForPlaces() {
         }
       }
       map.panTo(location.marker.getPosition());
-      location.marker.infowindow.setContent(location.content);
+      location.marker.infowindow.setContent(location.info);
       location.marker.infowindow.open(map, location.marker);
       _.defer(() => Util.toggleMarkerBounceAnimation(location.marker));
     });
