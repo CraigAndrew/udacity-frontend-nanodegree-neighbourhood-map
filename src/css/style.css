@@ -16,7 +16,7 @@ input.search-input {
 
 div.search-area {
   position: absolute;
-  width: auto;
+  width: 100%;
   max-width: 250px;
   min-width: 100px;
   margin: 1% 0 0 2%;
