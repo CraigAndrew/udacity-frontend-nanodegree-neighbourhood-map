@@ -29610,14 +29610,16 @@ var Place = function Place(name, cat, lng, lat) {
 
 var showInfoWindow = function showInfoWindow(place) {
   map.setCenter(place.marker.getPosition());
-  for (var i = 0; i < viewModel.places.length; i++) {
-    if (viewModel.places[i].marker.infowindow) {
-      viewModel.places[i].marker.infowindow.close();
+  _lodash2.default.forEach(viewModel.places, function (_ref) {
+    var infoWindow = _ref.marker.infoWindow;
+
+    if (infoWindow) {
+      infoWindow.close();
     }
-  }
+  });
   map.panTo(place.marker.getPosition());
-  place.marker.infowindow.setContent(place.info);
-  place.marker.infowindow.open(map, place.marker);
+  place.marker.infoWindow.setContent(place.info);
+  place.marker.infoWindow.open(map, place.marker);
   _lodash2.default.defer(function () {
     return _util2.default.toggleMarkerBounceAnimation(place.marker);
   });
@@ -29639,15 +29641,18 @@ viewModel = {
 viewModel.search = _knockout2.default.computed(function () {
   var _this = this;
   var search = _this.query().toLowerCase();
-  var searchResults = _knockout2.default.utils.arrayFilter(_this.places, function (location) {
-    var match = location.name.toLowerCase().indexOf(search) >= 0;
+  var searchResults = _knockout2.default.utils.arrayFilter(_this.places, function (_ref2) {
+    var name = _ref2.name,
+        marker = _ref2.marker;
+
+    var match = name.toLowerCase().indexOf(search) >= 0;
     if (!match) {
-      if (location.marker) {
-        location.marker.setVisible(false);
+      if (marker) {
+        marker.setVisible(false);
       }
     } else {
-      if (location.marker) {
-        location.marker.setVisible(true);
+      if (marker) {
+        marker.setVisible(true);
       }
     }
     return match;
@@ -29670,19 +29675,19 @@ function setupMarkersForPlaces() {
       icon: location.icon
     });
 
-    location.marker.infowindow = new google.maps.InfoWindow();
+    location.marker.infoWindow = new google.maps.InfoWindow();
 
     // Assigns a click event listener to the marker to open the info window.
     location.marker.addListener = google.maps.event.addListener(location.marker, 'click', function () {
       map.setCenter(location.marker.getPosition());
       for (var i = 0; i < viewModel.places.length; i++) {
-        if (viewModel.places[i].marker.infowindow) {
-          viewModel.places[i].marker.infowindow.close();
+        if (viewModel.places[i].marker.infoWindow) {
+          viewModel.places[i].marker.infoWindow.close();
         }
       }
       map.panTo(location.marker.getPosition());
-      location.marker.infowindow.setContent(location.info);
-      location.marker.infowindow.open(map, location.marker);
+      location.marker.infoWindow.setContent(location.info);
+      location.marker.infoWindow.open(map, location.marker);
       _lodash2.default.defer(function () {
         return _util2.default.toggleMarkerBounceAnimation(location.marker);
       });
@@ -29838,8 +29843,6 @@ Util.fetchInfo = function (place) {
     console.log('getJSON request failed! ' + textStatus);
   });
 };
-
-Util.showInfoWindow = function (map, viewModel, place) {};
 
 Util.highlightPlace = function (place) {
   place.marker.setIcon(imgPath + 'active.png');

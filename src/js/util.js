@@ -77,10 +77,6 @@ Util.fetchInfo = function(place) {
   });
 }
 
-Util.showInfoWindow = function(map, viewModel, place) {
-
-}
-
 Util.highlightPlace = function(place) {
   place.marker.setIcon(`${imgPath}active.png`);
 }

@@ -21,7 +21,7 @@ let viewModel;
  * @param lat
  * @constructor
  */
-let Place = function(name, cat, lng, lat) {
+const Place = function(name, cat, lng, lat) {
   this.name = name;
   this.lng = lng;
   this.lat = lat;
@@ -29,16 +29,16 @@ let Place = function(name, cat, lng, lat) {
   Util.fetchInfo(this);
 };
 
-var showInfoWindow = function(place) {
+const showInfoWindow = function(place) {
   map.setCenter(place.marker.getPosition());
-  for (let i=0; i < viewModel.places.length; i++) {
-    if (viewModel.places[i].marker.infowindow) {
-      viewModel.places[i].marker.infowindow.close();
+  _.forEach(viewModel.places, ({ marker: { infoWindow } }) => {
+    if (infoWindow) {
+      infoWindow.close();
     }
-  }
+  });
   map.panTo(place.marker.getPosition())
-  place.marker.infowindow.setContent(place.info);
-  place.marker.infowindow.open(map, place.marker);
+  place.marker.infoWindow.setContent(place.info);
+  place.marker.infoWindow.open(map, place.marker);
   _.defer(() => Util.toggleMarkerBounceAnimation(place.marker));
 }
 
@@ -66,15 +66,15 @@ viewModel = {
 viewModel.search = ko.computed(function() {
   const _this = this;
   const search = _this.query().toLowerCase();
-  let searchResults = ko.utils.arrayFilter(_this.places, (location) => {
-    const match =  location.name.toLowerCase().indexOf(search) >= 0;
+  let searchResults = ko.utils.arrayFilter(_this.places, ({ name, marker }) => {
+    const match =  name.toLowerCase().indexOf(search) >= 0;
     if (!match) {
-      if (location.marker) {
-        location.marker.setVisible(false);
+      if (marker) {
+        marker.setVisible(false);
       }
     } else {
-      if (location.marker) {
-        location.marker.setVisible(true);
+      if (marker) {
+        marker.setVisible(true);
       }
     }
     return match;
@@ -97,19 +97,19 @@ function setupMarkersForPlaces() {
       icon: location.icon
     });
 
-    location.marker.infowindow = new google.maps.InfoWindow();
+    location.marker.infoWindow = new google.maps.InfoWindow();
 
     // Assigns a click event listener to the marker to open the info window.
     location.marker.addListener = google.maps.event.addListener(location.marker, 'click', () => {
       map.setCenter(location.marker.getPosition());
       for (let i=0; i < viewModel.places.length; i++) {
-        if (viewModel.places[i].marker.infowindow) {
-          viewModel.places[i].marker.infowindow.close();
+        if (viewModel.places[i].marker.infoWindow) {
+          viewModel.places[i].marker.infoWindow.close();
         }
       }
       map.panTo(location.marker.getPosition());
-      location.marker.infowindow.setContent(location.info);
-      location.marker.infowindow.open(map, location.marker);
+      location.marker.infoWindow.setContent(location.info);
+      location.marker.infoWindow.open(map, location.marker);
       _.defer(() => Util.toggleMarkerBounceAnimation(location.marker));
     });
   });
