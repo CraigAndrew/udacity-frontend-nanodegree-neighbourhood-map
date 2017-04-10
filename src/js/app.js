@@ -3,7 +3,6 @@
 //
 // imports
 import _ from 'lodash';
-import $ from 'jquery';
 import ko from 'knockout';
 import GoogleMapsApiLoader from 'google-maps-api-loader';
 import MapHelper from './map-helper';
@@ -11,7 +10,6 @@ import Util from './util';
 
 // constant declarations
 const googleApiKey = 'AIzaSyC_77S5Ozh5RMPEQ98QBA9iOSHPQxZM_N8';
-const imgPath = 'src/css/img/';
 let map;
 let viewModel;
 
@@ -31,6 +29,19 @@ let Place = function(name, cat, lng, lat) {
   Util.fetchInfo(this);
 };
 
+var showInfoWindow = function(place) {
+  map.setCenter(place.marker.getPosition());
+  for (let i=0; i < viewModel.places.length; i++) {
+    if (viewModel.places[i].marker.infowindow) {
+      viewModel.places[i].marker.infowindow.close();
+    }
+  }
+  map.panTo(place.marker.getPosition())
+  place.marker.infowindow.setContent(place.info);
+  place.marker.infowindow.open(map, place.marker);
+  _.defer(() => Util.toggleMarkerBounceAnimation(place.marker));
+}
+
 // Contains all the places and search function.
 viewModel = {
   places: [
@@ -43,33 +54,9 @@ viewModel = {
     new Place('Chez nous', 'eat', -29.836469892379846, 30.91703684659349)
   ],
   query: ko.observable(''),
-  showInfoWindow: function(place) {
-    map.setCenter(place.marker.getPosition());
-    for (let i=0; i < viewModel.places.length; i++) {
-      if (viewModel.places[i].marker.infowindow) {
-        viewModel.places[i].marker.infowindow.close();
-      }
-    }
-    map.panTo(place.marker.getPosition())
-    place.marker.infowindow.setContent(place.info);
-    place.marker.infowindow.open(map, place.marker);
-    _.defer(() => Util.toggleMarkerBounceAnimation(place.marker));
-  },
-  highlightPlace: function(place) {
-    place.marker.setIcon(imgPath + 'active.png');
-  },
-  unhighlightPlace: function(place) {
-    switch (place.cat) {
-      case "eat":
-        place.marker.setIcon(imgPath + 'eat.png');
-        break;
-      case "shop":
-        place.marker.setIcon(imgPath + 'shop.png');
-        break;
-      default:
-        place.marker.setIcon(imgPath + 'default.png');
-    }
-  }
+  showInfoWindow,
+  highlightPlace: Util.highlightPlace,
+  unhighlightPlace: Util.unhighlightPlace
 };
 
 /**

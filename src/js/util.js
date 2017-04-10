@@ -6,6 +6,7 @@ import $ from 'jquery';
 const bounceTwiceAnimation = 4;
 const fourSquareClientId = '0FD1PHV1YKMHSMF0T1M1PFIFLWRB12EQAGRDIK5Z2WOJOVNQ';
 const fourSquareClientSecret = 'XXASVO0SW14RJKNE0ETMNNATAPQVBO0PPJA5WFNATBPW3J3L';
+const imgPath = 'src/css/img/';
 
 /**
  *
@@ -74,6 +75,27 @@ Util.fetchInfo = function(place) {
   }).fail((jqXHR, textStatus, errorThrown) => {
     console.log('getJSON request failed! ' + textStatus);
   });
+}
+
+Util.showInfoWindow = function(map, viewModel, place) {
+
+}
+
+Util.highlightPlace = function(place) {
+  place.marker.setIcon(`${imgPath}active.png`);
+}
+
+Util.unhighlightPlace = function(place) {
+  switch (place.cat) {
+    case 'eat':
+      place.marker.setIcon(`${imgPath}eat.png`);
+      break;
+    case 'shop':
+      place.marker.setIcon(`${imgPath}shop.png`);
+      break;
+    default:
+      place.marker.setIcon(`${imgPath}default.png`);
+  }
 }
 
 export default Util;

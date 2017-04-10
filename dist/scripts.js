@@ -29569,10 +29569,6 @@ var _lodash = require('lodash');
 
 var _lodash2 = _interopRequireDefault(_lodash);
 
-var _jquery = require('jquery');
-
-var _jquery2 = _interopRequireDefault(_jquery);
-
 var _knockout = require('knockout');
 
 var _knockout2 = _interopRequireDefault(_knockout);
@@ -29593,7 +29589,6 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 // constant declarations
 var googleApiKey = 'AIzaSyC_77S5Ozh5RMPEQ98QBA9iOSHPQxZM_N8';
-var imgPath = 'src/css/img/';
 var map = void 0;
 var viewModel = void 0;
 
@@ -29613,39 +29608,28 @@ var Place = function Place(name, cat, lng, lat) {
   _util2.default.fetchInfo(this);
 };
 
+var showInfoWindow = function showInfoWindow(place) {
+  map.setCenter(place.marker.getPosition());
+  for (var i = 0; i < viewModel.places.length; i++) {
+    if (viewModel.places[i].marker.infowindow) {
+      viewModel.places[i].marker.infowindow.close();
+    }
+  }
+  map.panTo(place.marker.getPosition());
+  place.marker.infowindow.setContent(place.info);
+  place.marker.infowindow.open(map, place.marker);
+  _lodash2.default.defer(function () {
+    return _util2.default.toggleMarkerBounceAnimation(place.marker);
+  });
+};
+
 // Contains all the places and search function.
 viewModel = {
   places: [new Place('The Pavilion Shopping Center', 'shop', -29.849002300639423, 30.93577734073859), new Place('Westville Mall', 'shop', -29.83608, 30.918399), new Place('Kauai', 'eat', -29.83608, 30.918399), new Place('Olive & Oil Cafe', 'eat', 29.839529871456172, 30.925247375447384), new Place('Waxy O\'Connors', 'eat', -29.827756663602152, 30.929725103495258), new Place('Lupa Osteria', 'eat', -29.8277474062012, 30.930414401226106), new Place('Chez nous', 'eat', -29.836469892379846, 30.91703684659349)],
   query: _knockout2.default.observable(''),
-  showInfoWindow: function showInfoWindow(place) {
-    map.setCenter(place.marker.getPosition());
-    for (var i = 0; i < viewModel.places.length; i++) {
-      if (viewModel.places[i].marker.infowindow) {
-        viewModel.places[i].marker.infowindow.close();
-      }
-    }
-    map.panTo(place.marker.getPosition());
-    place.marker.infowindow.setContent(place.info);
-    place.marker.infowindow.open(map, place.marker);
-    _lodash2.default.defer(function () {
-      return _util2.default.toggleMarkerBounceAnimation(place.marker);
-    });
-  },
-  highlightPlace: function highlightPlace(place) {
-    place.marker.setIcon(imgPath + 'active.png');
-  },
-  unhighlightPlace: function unhighlightPlace(place) {
-    switch (place.cat) {
-      case "eat":
-        place.marker.setIcon(imgPath + 'eat.png');
-        break;
-      case "shop":
-        place.marker.setIcon(imgPath + 'shop.png');
-        break;
-      default:
-        place.marker.setIcon(imgPath + 'default.png');
-    }
-  }
+  showInfoWindow: showInfoWindow,
+  highlightPlace: _util2.default.highlightPlace,
+  unhighlightPlace: _util2.default.unhighlightPlace
 };
 
 /**
@@ -29722,7 +29706,7 @@ function setupMarkersForPlaces() {
 
 _knockout2.default.applyBindings(viewModel);
 
-},{"./map-helper":10,"./util":11,"google-maps-api-loader":2,"jquery":5,"knockout":6,"lodash":7}],10:[function(require,module,exports){
+},{"./map-helper":10,"./util":11,"google-maps-api-loader":2,"knockout":6,"lodash":7}],10:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -29780,6 +29764,7 @@ var Util = {};
 var bounceTwiceAnimation = 4;
 var fourSquareClientId = '0FD1PHV1YKMHSMF0T1M1PFIFLWRB12EQAGRDIK5Z2WOJOVNQ';
 var fourSquareClientSecret = 'XXASVO0SW14RJKNE0ETMNNATAPQVBO0PPJA5WFNATBPW3J3L';
+var imgPath = 'src/css/img/';
 
 /**
  *
@@ -29852,6 +29837,25 @@ Util.fetchInfo = function (place) {
   }).fail(function (jqXHR, textStatus, errorThrown) {
     console.log('getJSON request failed! ' + textStatus);
   });
+};
+
+Util.showInfoWindow = function (map, viewModel, place) {};
+
+Util.highlightPlace = function (place) {
+  place.marker.setIcon(imgPath + 'active.png');
+};
+
+Util.unhighlightPlace = function (place) {
+  switch (place.cat) {
+    case 'eat':
+      place.marker.setIcon(imgPath + 'eat.png');
+      break;
+    case 'shop':
+      place.marker.setIcon(imgPath + 'shop.png');
+      break;
+    default:
+      place.marker.setIcon(imgPath + 'default.png');
+  }
 };
 
 exports.default = Util;
