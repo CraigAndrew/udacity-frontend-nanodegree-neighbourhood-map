@@ -18,7 +18,7 @@ GoogleMapsApiLoader({
 }).then(() => {
   MapHelper.initializeMap();
   setupMarkersForPlaces();
-  Util.setupListUi();
+  Util.setupListUi(viewModel);
 }, (err) => {
   alert('Problem loading Google Maps library. Please try again later');
 });

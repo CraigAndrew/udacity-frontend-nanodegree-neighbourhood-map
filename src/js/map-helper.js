@@ -1,4 +1,5 @@
 const MapHelper = {};
+import $ from 'jquery';
 const defaultLat = -29.831808;
 const defaultLng = 30.924656000000027;
 const defaultZoomLevel = 15;
@@ -10,12 +11,12 @@ let map;
  */
 MapHelper.initializeMap = function() {
   let mapOptions = {
-    zoom: defaultZoomLevel,
     center: new google.maps.LatLng(defaultLat, defaultLng),
     disableDefaultUI: true,
-    mapTypeId: 'roadmap',
     gestureHandling: 'cooperative',
-    fullscreenControl: true
+    mapTypeId: 'roadmap',
+    zoom: defaultZoomLevel,
+    zoomControl: true
   };
   map = new google.maps.Map(document.getElementById('map'), mapOptions);
 
@@ -30,16 +31,20 @@ MapHelper.initializeMap = function() {
  * Centralizes map to marker
  * @param marker
  */
-MapHelper.panToMarker = function(marker) {
-  map.panTo(marker.getPosition());
+MapHelper.panAndZoomToPosition = function(position) {
+  map.setZoom(defaultZoomLevel);
+
+  const divHeightOfTheMap = $('#map').outerHeight();
+  const bottomOffSet = 45;
+  map.setCenter(position);
+  map.panBy(0, -((0.5 * divHeightOfTheMap) - bottomOffSet));
 }
 
 /**
  * Centralizes map to default position and zooms map to default zoom level
  */
 MapHelper.panAndZoomToDefaultPosition = function() {
-  map.panTo(new google.maps.LatLng(defaultLat, defaultLng));
-  map.setZoom(defaultZoomLevel);
+  MapHelper.panAndZoomToPosition(new google.maps.LatLng(defaultLat, defaultLng));
 }
 
 /**

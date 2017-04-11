@@ -29597,7 +29597,7 @@ var viewModel = void 0;
 }).then(function () {
   _mapHelper2.default.initializeMap();
   setupMarkersForPlaces();
-  _util2.default.setupListUi();
+  _util2.default.setupListUi(viewModel);
 }, function (err) {
   alert('Problem loading Google Maps library. Please try again later');
 });
@@ -29681,7 +29681,15 @@ _knockout2.default.applyBindings(viewModel);
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+
+var _jquery = require('jquery');
+
+var _jquery2 = _interopRequireDefault(_jquery);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
 var MapHelper = {};
+
 var defaultLat = -29.831808;
 var defaultLng = 30.924656000000027;
 var defaultZoomLevel = 15;
@@ -29693,12 +29701,12 @@ var map = void 0;
  */
 MapHelper.initializeMap = function () {
   var mapOptions = {
-    zoom: defaultZoomLevel,
     center: new google.maps.LatLng(defaultLat, defaultLng),
     disableDefaultUI: true,
-    mapTypeId: 'roadmap',
     gestureHandling: 'cooperative',
-    fullscreenControl: true
+    mapTypeId: 'roadmap',
+    zoom: defaultZoomLevel,
+    zoomControl: true
   };
   map = new google.maps.Map(document.getElementById('map'), mapOptions);
 
@@ -29713,16 +29721,20 @@ MapHelper.initializeMap = function () {
  * Centralizes map to marker
  * @param marker
  */
-MapHelper.panToMarker = function (marker) {
-  map.panTo(marker.getPosition());
+MapHelper.panAndZoomToPosition = function (position) {
+  map.setZoom(defaultZoomLevel);
+
+  var divHeightOfTheMap = (0, _jquery2.default)('#map').outerHeight();
+  var bottomOffSet = 45;
+  map.setCenter(position);
+  map.panBy(0, -(0.5 * divHeightOfTheMap - bottomOffSet));
 };
 
 /**
  * Centralizes map to default position and zooms map to default zoom level
  */
 MapHelper.panAndZoomToDefaultPosition = function () {
-  map.panTo(new google.maps.LatLng(defaultLat, defaultLng));
-  map.setZoom(defaultZoomLevel);
+  MapHelper.panAndZoomToPosition(new google.maps.LatLng(defaultLat, defaultLng));
 };
 
 /**
@@ -29751,7 +29763,7 @@ MapHelper.createMarker = function (place) {
 
 exports.default = MapHelper;
 
-},{}],11:[function(require,module,exports){
+},{"jquery":5}],11:[function(require,module,exports){
 module.exports=[
   {
     "name": "The Pavilion Shopping Mall",
@@ -29903,19 +29915,28 @@ Util.isMobile = function () {
 /**
  * Tidies up list and the UI after initializing and setup of dependencies and data
  */
-Util.setupListUi = function () {
+Util.setupListUi = function (viewModel) {
   (0, _jquery2.default)('span#arrow').click(function () {
     (0, _jquery2.default)('ul').slideToggle();
   });
   (0, _jquery2.default)(window).resize(function () {
     if (Util.isMobile()) {
       _mapHelper2.default.panAndZoomToDefaultPosition();
-      (0, _jquery2.default)('ul').slideUp();
+      Util.closeOpenInfoWindows(viewModel);
+      Util.closeList();
     } else {
-      (0, _jquery2.default)('ul').slideDown();
+      Util.openList();
     }
   });
 
+  Util.openList();
+};
+
+Util.closeList = function () {
+  (0, _jquery2.default)('ul').slideUp();
+};
+
+Util.openList = function () {
   (0, _jquery2.default)('ul').slideDown();
 };
 
@@ -29945,6 +29966,7 @@ Util.fetchInfo = function (place) {
  * @param place
  */
 Util.highlightPlace = function (place) {
+  console.log('highlightPlace', place);
   place.marker.setIcon(imgPath + 'active.png');
 };
 
@@ -29970,6 +29992,7 @@ Util.unhighlightPlace = function (place) {
  * @param viewModel
  */
 Util.closeOpenInfoWindows = function (viewModel) {
+  console.log('closeOpenInfoWindows');
   _lodash2.default.forEach(viewModel.places, function (_ref2) {
     var infoWindow = _ref2.marker.infoWindow;
 
@@ -29984,7 +30007,7 @@ Util.closeOpenInfoWindows = function (viewModel) {
  * @param marker
  */
 Util.adjustMapForActiveMarker = function (marker) {
-  _mapHelper2.default.panToMarker(marker);
+  _mapHelper2.default.panAndZoomToPosition(marker.getPosition());
   Util.toggleMarkerBounceAnimation(marker);
 };
 

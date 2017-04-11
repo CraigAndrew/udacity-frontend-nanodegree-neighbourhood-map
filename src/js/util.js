@@ -61,19 +61,28 @@ Util.isMobile = function() {
 /**
  * Tidies up list and the UI after initializing and setup of dependencies and data
  */
-Util.setupListUi = function() {
+Util.setupListUi = function(viewModel) {
   $('span#arrow').click(() => {
     $('ul').slideToggle();
   });
   $( window ).resize(() => {
     if (Util.isMobile()) {
       MapHelper.panAndZoomToDefaultPosition();
-      $('ul').slideUp();
+      Util.closeOpenInfoWindows(viewModel);
+      Util.closeList();
     } else {
-      $('ul').slideDown();
+      Util.openList();
     }
   });
 
+  Util.openList();
+}
+
+Util.closeList = function() {
+  $('ul').slideUp();
+}
+
+Util.openList = function() {
   $('ul').slideDown();
 }
 
@@ -137,7 +146,7 @@ Util.closeOpenInfoWindows = function(viewModel) {
  * @param marker
  */
 Util.adjustMapForActiveMarker = function(marker) {
-  MapHelper.panToMarker(marker);
+  MapHelper.panAndZoomToPosition(marker.getPosition());
   Util.toggleMarkerBounceAnimation(marker);
 }
 

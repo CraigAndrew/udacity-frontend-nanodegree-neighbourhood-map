@@ -6,27 +6,6 @@ body {
     font: 18px/28px Calibri, Arial, Helvetica;
 }
 
-input[list] {
-  background-color: rgba(0,0,0,.3);
-}
-
-input.search-input {
-  margin: 5px;
-}
-
-div.search-area {
-  position: absolute;
-  width: auto;
-  max-width: 250px;
-  min-width: 100px;
-  margin-left: 7px;
-  margin-top: 7px;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
-  font-family: Roboto,Arial,sans-serif;
-  font-size: 14px;
-  z-index: 100;
-}
-
 #map {
   width: 100%;
   height: 100%;
@@ -34,6 +13,34 @@ div.search-area {
   position: absolute;
   top: 0;
   z-index: 99;
+}
+
+div.search-area {
+  position: absolute;
+  width: 100%;
+  max-width: 300px;
+  min-width: 100px;
+  margin-left: 7px;
+  margin-top: 7px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+  font-family: Roboto,Arial,sans-serif;
+  font-size: 14px;
+  z-index: 100;
+  flex-grow: 1;
+}
+
+input.search-input {
+    font-size: 12px;
+    margin-left: 0;
+    padding-left: 2px;
+    padding-top: 0px;
+    text-overflow: ellipsis;
+    width: 88%;
+    margin-right: -74px;
+}
+
+input[list] {
+  background-color: rgba(0,0,0,.3);
 }
 
 ul {
@@ -51,4 +58,46 @@ li {
 
 .active-item {
   background-color: white;
+}
+
+#input {
+    font-size: 12px;
+    margin-left: 0;
+    text-overflow: ellipsis;
+    width: 300px;
+    margin-top: 44px;
+    margin-right: -74px;
+}
+
+.arrow {
+    float: right;
+}
+
+li:hover {
+    background-color: lightgreen;
+}
+
+@media screen and (max-width: 900px) {
+    input.search-input {
+        width: 95%;
+        padding-left: 0;
+        padding-top: 0;
+        margin-left: 0;
+        margin-top: 0;
+    }
+
+    div.search-area {
+        width: 100%;
+        max-width: 100%;
+        min-width: 100px;
+        padding-left: 0;
+        padding-top: 0;
+        margin-left: 0;
+        margin-top: 0;
+    }
+
+    .gm-style-iw {
+        width: 300px !important;
+        height: 200px !important;
+    }
 }

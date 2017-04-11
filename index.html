@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="viewport" content="width=device-width,height=device-height,initial-scale=1.0" />
   <link rel="stylesheet" href="src/css/style.css" type="text/css" />
   <script src="src/js/offline.min.js" async></script>
   <script src="src/js/pace.min.js" async></script>
@@ -11,24 +11,18 @@
   <link href="src/css/offline-theme-chrome.css" rel="stylesheet" />
 </head>
 <body>
-  <div class="row" id="search-input-row">
-    <div class="col-md-3">
-      <div class="search-area collapse" id="search-area">
-        <input class="search-input" placeholder="Search for Places..." type="text" name="q" data-bind="value: filter, valueUpdate: 'keyup'">
-				<span id="arrow" data-bind="text: getArrow, click: toggleArrow"></span>
-        <ul class="location-list" data-bind="visible:filter, template: {name: 'location', foreach: search}">
-        </ul>
-      </div>
-    </div>
-  </div>
-  <div class="row">
-    <div class="col-md-3">
-      <div id="map"></div>
-    </div>
+  <div id="search-input-row">
+		<div class="search-area collapse" id="search-area">
+			<input class="search-input" placeholder="Search for Places..." type="text" name="q" data-bind="value: filter, valueUpdate: 'keyup'">
+			<span class="arrow" id="arrow" data-bind="text: getArrow, click: toggleArrow"></span>
+			<ul class="location-list" data-bind="visible:filter, template: {name: 'location', foreach: search}">
+			</ul>
+		</div>
+    <div id="map"></div>
   </div>
 
   <script type="text/html" id="location">
-    <li class="location-item" data-bind="text: name, click: $root.showInfoWindow, event: { mouseover: $root.highlightPlace, mouseout: $root.unhighlightPlace }"></li>
+    <li class="location-item" data-bind="event: { mouseover: $root.highlightPlace, mouseout: $root.unhighlightPlace }, text: name, click: $root.showInfoWindow"></li>
   </script>
   <script src="dist/bundle.min.js" async></script>
 </body>
