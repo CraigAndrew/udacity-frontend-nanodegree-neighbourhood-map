@@ -29654,6 +29654,7 @@ viewModel.search = _knockout2.default.computed(function () {
 function setupMarkersForPlaces() {
   _lodash2.default.forEach(viewModel.places, function (place) {
     createMarker(place);
+    console.log('place', place);
     setupMarkerClickListener(place);
   });
 }
@@ -29668,19 +29669,10 @@ function createMarker(place) {
   });
 }
 
-function setupMarkerClickListener(_ref3) {
-  var marker = _ref3.marker,
-      info = _ref3.info;
-
-  marker.infoWindow = new google.maps.InfoWindow();
-  marker.addListener = google.maps.event.addListener(marker, 'click', function () {
-    _util2.default.centerAndPanMap(map, marker);
-    _util2.default.closeOpenInfoWindows(viewModel);
-    marker.infoWindow.setContent(info);
-    marker.infoWindow.open(map, marker);
-    _lodash2.default.defer(function () {
-      return _util2.default.toggleMarkerBounceAnimation(marker);
-    });
+function setupMarkerClickListener(place) {
+  place.marker.infoWindow = new google.maps.InfoWindow();
+  place.marker.addListener = google.maps.event.addListener(place.marker, 'click', function () {
+    showInfoWindow(place);
   });
 }
 
@@ -29822,7 +29814,13 @@ var Place = function Place(name, cat, lng, lat) {
  * @param marker
  */
 Util.toggleMarkerBounceAnimation = function (marker) {
-  this.toggleMarkerAnimation(marker, bounceTwiceAnimation);
+  var _this = this;
+
+  var delay = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 500;
+
+  setTimeout(function () {
+    return _this.toggleMarkerAnimation(marker, bounceTwiceAnimation, delay);
+  });
 };
 
 /**
@@ -29924,9 +29922,7 @@ Util.openInfoWindowForActiveMarker = function (map, marker, info) {
 
 Util.adjustMapForActiveMarker = function (map, marker) {
   Util.centerAndPanMap(map, marker);
-  setTimeout(function () {
-    return Util.toggleMarkerBounceAnimation(marker);
-  }, 500);
+  Util.toggleMarkerBounceAnimation(marker);
 };
 
 Util.setupPlaces = function () {

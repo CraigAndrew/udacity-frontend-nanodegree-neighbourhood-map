@@ -32,8 +32,8 @@ const Place = function(name, cat, lng, lat) {
  *
  * @param marker
  */
-Util.toggleMarkerBounceAnimation = function(marker) {
-  this.toggleMarkerAnimation(marker, bounceTwiceAnimation);
+Util.toggleMarkerBounceAnimation = function(marker, delay = 500) {
+  setTimeout(() => this.toggleMarkerAnimation(marker, bounceTwiceAnimation, delay));
 }
 
 /**
@@ -129,7 +129,7 @@ Util.openInfoWindowForActiveMarker = function(map, marker, info) {
 
 Util.adjustMapForActiveMarker = function(map, marker) {
   Util.centerAndPanMap(map, marker);
-  setTimeout(() => Util.toggleMarkerBounceAnimation(marker), 500);
+  Util.toggleMarkerBounceAnimation(marker);
 }
 
 Util.setupPlaces = function() {

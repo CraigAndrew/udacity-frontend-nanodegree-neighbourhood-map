@@ -83,14 +83,10 @@ function createMarker(place) {
   });
 }
 
-function setupMarkerClickListener({ marker, info }) {
-  marker.infoWindow = new google.maps.InfoWindow();
-  marker.addListener = google.maps.event.addListener(marker, 'click', () => {
-    Util.centerAndPanMap(map, marker);
-    Util.closeOpenInfoWindows(viewModel);
-    marker.infoWindow.setContent(info);
-    marker.infoWindow.open(map, marker);
-    _.defer(() => Util.toggleMarkerBounceAnimation(marker));
+function setupMarkerClickListener(place) {
+  place.marker.infoWindow = new google.maps.InfoWindow();
+  place.marker.addListener = google.maps.event.addListener(place.marker, 'click', () => {
+    showInfoWindow(place);
   });
 }
 
