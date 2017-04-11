@@ -29621,17 +29621,24 @@ var showInfoWindow = function showInfoWindow(_ref) {
 viewModel = {
   highlightPlace: _util2.default.highlightPlace,
   places: _util2.default.setupPlaces(),
-  query: _knockout2.default.observable(''),
+  filter: _knockout2.default.observable(''),
   showInfoWindow: showInfoWindow,
-  unhighlightPlace: _util2.default.unhighlightPlace
+  unhighlightPlace: _util2.default.unhighlightPlace,
+  arrowUp: _knockout2.default.observable(true),
+  toggleArrow: function toggleArrow() {
+    viewModel.arrowUp(!viewModel.arrowUp());
+  },
+  getArrow: _knockout2.default.pureComputed(function () {
+    return viewModel.arrowUp() ? '▲' : '▼';
+  })
 };
 
 /**
- * Search function for input search query. Filters down list of places shown in list as well as markers visible.
+ * Search function for input search filter. Filters down list of places shown in list as well as markers visible.
  */
 viewModel.search = _knockout2.default.computed(function () {
   var _this = this;
-  var search = _this.query().toLowerCase();
+  var search = _this.filter().toLowerCase();
   var searchResults = _knockout2.default.utils.arrayFilter(_this.places, function (_ref2) {
     var name = _ref2.name,
         marker = _ref2.marker;
@@ -29654,7 +29661,6 @@ viewModel.search = _knockout2.default.computed(function () {
 function setupMarkersForPlaces() {
   _lodash2.default.forEach(viewModel.places, function (place) {
     createMarker(place);
-    console.log('place', place);
     setupMarkerClickListener(place);
   });
 }
@@ -29677,6 +29683,12 @@ function setupMarkerClickListener(place) {
 }
 
 _knockout2.default.applyBindings(viewModel);
+
+// TODOS:
+// TODO: indicate somewhere in your UI that using Foursquare
+// TODO: proper use of knockout 1
+// TODO: proper use of knockout 1a - Replace up and down arrow jquery dom manipulation with knockout
+// TODO: proper use of knockout 1b - Follow MVVM strictly (separation of view, model and viewmodel concerns)
 
 },{"./map-helper":10,"./util":12,"google-maps-api-loader":2,"knockout":6,"lodash":7}],10:[function(require,module,exports){
 'use strict';
@@ -29716,7 +29728,7 @@ exports.default = MapHelper;
 },{}],11:[function(require,module,exports){
 module.exports=[
   {
-    "name": "The Pavilion Shopping Center",
+    "name": "The Pavilion Shopping Mall",
     "cat": "shop",
     "lng": -29.849002300639423,
     "lat": 30.93577734073859
@@ -29728,16 +29740,16 @@ module.exports=[
     "lat": 30.918399
   },
   {
-    "name": "Kauai",
+    "name": "KFC",
     "cat": "eat",
-    "lng": -29.83608,
-    "lat": 30.918399
+    "lng": -29.835465,
+    "lat": 30.915886
   },
   {
-    "name": "Olive & Oil Cafe",
+    "name": "Woodcutters",
     "cat": "eat",
-    "lng": 29.839529871456172,
-    "lat": 30.925247375447384
+    "lng": -29.8349063,
+    "lat": 30.915307799999937
   },
   {
     "name": "Waxy O'Connors",
@@ -29756,6 +29768,18 @@ module.exports=[
     "cat": "eat",
     "lng": -29.836469892379846,
     "lat": 30.91703684659349
+  },
+  {
+    "name": "John Dorys",
+    "cat": "eat",
+    "lng": -29.826951,
+    "lat": 30.93042700000001
+  },
+  {
+    "name": "Seven Seas",
+    "cat": "eat",
+    "lng": -29.828465,
+    "lat": 30.93164999999999
   }
 ]
 
@@ -29851,14 +29875,6 @@ Util.isMobile = function () {
 Util.setupListUi = function () {
   (0, _jquery2.default)('span#arrow').click(function () {
     (0, _jquery2.default)('ul').slideToggle();
-
-    if ((0, _jquery2.default)('span#arrow').html() === '▼') {
-      (0, _jquery2.default)('span#arrow').html('▲');
-      (0, _jquery2.default)('div.search-area').css({ 'width': '100%' });
-    } else {
-      (0, _jquery2.default)('span#arrow').html('▼');
-      (0, _jquery2.default)('div.search-area').css({ 'width': 'auto' });
-    }
   });
   (0, _jquery2.default)(window).resize(function () {
     if (Util.isMobile()) {
@@ -29882,7 +29898,7 @@ Util.fetchInfo = function (place) {
     var categoryName = venue.categories[0].name;
     var location = venue.location;
     var formattedAddress = location.formattedAddress;
-    place.info = '<h2>' + venueName + '</h2><h3>' + categoryName + '</h3><h4>' + formattedAddress + '</h4>';
+    place.info = '<h2>' + venueName + '</h2><h3>' + categoryName + '</h3><h4>' + formattedAddress + '</h4><h6>data by FourSquare</h6>';
   }).fail(function (jqXHR, textStatus, errorThrown) {
     place.info = 'Problem with foursquare. Please try again later';
   });
@@ -29927,7 +29943,7 @@ Util.adjustMapForActiveMarker = function (map, marker) {
 
 Util.setupPlaces = function () {
   var placesArr = [];
-  _lodash2.default.forEach(_places2.default, function (_ref3) {
+  _lodash2.default.forEach(_lodash2.default.sortBy(_places2.default, 'name'), function (_ref3) {
     var name = _ref3.name,
         cat = _ref3.cat,
         lng = _ref3.lng,

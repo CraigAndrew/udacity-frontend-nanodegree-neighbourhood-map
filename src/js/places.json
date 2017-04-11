@@ -1,6 +1,6 @@
 [
   {
-    "name": "The Pavilion Shopping Center",
+    "name": "The Pavilion Shopping Mall",
     "cat": "shop",
     "lng": -29.849002300639423,
     "lat": 30.93577734073859
@@ -12,16 +12,16 @@
     "lat": 30.918399
   },
   {
-    "name": "Kauai",
+    "name": "KFC",
     "cat": "eat",
-    "lng": -29.83608,
-    "lat": 30.918399
+    "lng": -29.835465,
+    "lat": 30.915886
   },
   {
-    "name": "Olive & Oil Cafe",
+    "name": "Woodcutters",
     "cat": "eat",
-    "lng": 29.839529871456172,
-    "lat": 30.925247375447384
+    "lng": -29.8349063,
+    "lat": 30.915307799999937
   },
   {
     "name": "Waxy O'Connors",
@@ -40,5 +40,17 @@
     "cat": "eat",
     "lng": -29.836469892379846,
     "lat": 30.91703684659349
+  },
+  {
+    "name": "John Dorys",
+    "cat": "eat",
+    "lng": -29.826951,
+    "lat": 30.93042700000001
+  },
+  {
+    "name": "Seven Seas",
+    "cat": "eat",
+    "lng": -29.828465,
+    "lat": 30.93164999999999
   }
 ]

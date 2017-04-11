@@ -63,14 +63,6 @@ Util.isMobile = function() {
 Util.setupListUi = function() {
   $('span#arrow').click(() => {
     $('ul').slideToggle();
-
-    if ($('span#arrow').html() === '▼') {
-      $('span#arrow').html('▲');
-      $('div.search-area').css({'width': '100%'});
-    } else {
-      $('span#arrow').html('▼');
-      $('div.search-area').css({'width': 'auto'});
-    }
   });
   $( window ).resize(() => {
     if (Util.isMobile()) {
@@ -91,7 +83,7 @@ Util.fetchInfo = function(place) {
     const categoryName = venue.categories[0].name;
     const location = venue.location;
     const formattedAddress = location.formattedAddress;
-    place.info = `<h2>${venueName}</h2><h3>${categoryName}</h3><h4>${formattedAddress}</h4>`;
+    place.info = `<h2>${venueName}</h2><h3>${categoryName}</h3><h4>${formattedAddress}</h4><h6>data by FourSquare</h6>`;
   }).fail((jqXHR, textStatus, errorThrown) => {
     place.info = 'Problem with foursquare. Please try again later';
   });
@@ -134,7 +126,7 @@ Util.adjustMapForActiveMarker = function(map, marker) {
 
 Util.setupPlaces = function() {
   const placesArr = [];
-  _.forEach(Places, ({ name, cat, lng, lat }) => {
+  _.forEach(_.sortBy(Places, 'name'), ({ name, cat, lng, lat }) => {
     placesArr.push(new Place(name, cat, lng, lat))
   });
   return placesArr;

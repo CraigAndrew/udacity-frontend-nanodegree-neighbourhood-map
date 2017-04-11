@@ -39,17 +39,24 @@ const showInfoWindow = function({ marker, info }) {
 viewModel = {
   highlightPlace: Util.highlightPlace,
   places: Util.setupPlaces(),
-  query: ko.observable(''),
+  filter: ko.observable(''),
   showInfoWindow,
-  unhighlightPlace: Util.unhighlightPlace
+  unhighlightPlace: Util.unhighlightPlace,
+  arrowUp: ko.observable(true),
+  toggleArrow: () => {
+    viewModel.arrowUp(!viewModel.arrowUp());
+  },
+  getArrow: ko.pureComputed(() => {
+    return (viewModel.arrowUp() ? '▲': '▼');
+  })
 };
 
 /**
- * Search function for input search query. Filters down list of places shown in list as well as markers visible.
+ * Search function for input search filter. Filters down list of places shown in list as well as markers visible.
  */
 viewModel.search = ko.computed(function() {
   const _this = this;
-  const search = _this.query().toLowerCase();
+  const search = _this.filter().toLowerCase();
   const searchResults = ko.utils.arrayFilter(_this.places, ({ name, marker }) => {
     const match = name.toLowerCase().includes(search);
     marker ? (match ? marker.setVisible(true): marker.setVisible(false)): null;
@@ -62,6 +69,7 @@ viewModel.search = ko.computed(function() {
 
   return searchResults;
 }, viewModel);
+
 
 /**
  * Sets up the Google Maps markers on the map for each place.
@@ -91,3 +99,9 @@ function setupMarkerClickListener(place) {
 }
 
 ko.applyBindings(viewModel);
+
+// TODOS:
+// TODO: indicate somewhere in your UI that using Foursquare
+// TODO: proper use of knockout 1
+// TODO: proper use of knockout 1a - Replace up and down arrow jquery dom manipulation with knockout
+// TODO: proper use of knockout 1b - Follow MVVM strictly (separation of view, model and viewmodel concerns)
