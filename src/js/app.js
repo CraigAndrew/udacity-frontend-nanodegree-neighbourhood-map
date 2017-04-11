@@ -7,7 +7,6 @@ import Util from './util';
 
 // constant declarations
 const googleApiKey = 'AIzaSyC_77S5Ozh5RMPEQ98QBA9iOSHPQxZM_N8';
-let map;
 let viewModel;
 
 /**
@@ -17,23 +16,21 @@ GoogleMapsApiLoader({
   libraries: ['places'],
   apiKey: googleApiKey
 }).then(() => {
-  map = MapHelper.initializeMap();
+  MapHelper.initializeMap();
   setupMarkersForPlaces();
   Util.setupListUi();
 }, (err) => {
-  console.error('error for developer', err);
   alert('Problem loading Google Maps library. Please try again later');
 });
 
 /**
  * Display GoogleMaps InfoWindow for place with place info from 3rd party service
- *
  * @param place
  */
 const showInfoWindow = function({ marker, info }) {
   Util.closeOpenInfoWindows(viewModel);
-  Util.adjustMapForActiveMarker(map, marker);
-  Util.openInfoWindowForActiveMarker(map, marker, info);
+  Util.adjustMapForActiveMarker(marker);
+  MapHelper.openInfoWindowForActiveMarker(marker, info);
 }
 
 viewModel = {
@@ -76,21 +73,15 @@ viewModel.search = ko.computed(function() {
  */
 function setupMarkersForPlaces() {
   _.forEach(viewModel.places, (place) => {
-    createMarker(place);
+    MapHelper.createMarker(place);
     setupMarkerClickListener(place);
   });
 }
 
-function createMarker(place) {
-  place.marker = new google.maps.Marker({
-    animation: google.maps.Animation.DROP,
-    icon: place.icon,
-    map,
-    name: place.name,
-    position: new google.maps.LatLng(place.lng, place.lat)
-  });
-}
-
+/**
+ * Sets up click listener for place marker
+ * @param place
+ */
 function setupMarkerClickListener(place) {
   place.marker.infoWindow = new google.maps.InfoWindow();
   place.marker.addListener = google.maps.event.addListener(place.marker, 'click', () => {
@@ -99,9 +90,3 @@ function setupMarkerClickListener(place) {
 }
 
 ko.applyBindings(viewModel);
-
-// TODOS:
-// TODO: indicate somewhere in your UI that using Foursquare
-// TODO: proper use of knockout 1
-// TODO: proper use of knockout 1a - Replace up and down arrow jquery dom manipulation with knockout
-// TODO: proper use of knockout 1b - Follow MVVM strictly (separation of view, model and viewmodel concerns)

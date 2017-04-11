@@ -5,11 +5,12 @@ const Util = {};
 import _ from 'lodash';
 import $ from 'jquery';
 import Places from './places.json';
+import MapHelper from './map-helper';
+
 const bounceTwiceAnimation = 4;
 const fourSquareClientId = '0FD1PHV1YKMHSMF0T1M1PFIFLWRB12EQAGRDIK5Z2WOJOVNQ';
 const fourSquareClientSecret = 'XXASVO0SW14RJKNE0ETMNNATAPQVBO0PPJA5WFNATBPW3J3L';
 const imgPath = 'src/css/img/';
-
 
 /**
  * Place model constructor to create a place object based on place info and google marker properties
@@ -29,7 +30,7 @@ const Place = function(name, cat, lng, lat) {
 };
 
 /**
- *
+ * Toggles bounce animation of marker with a specified delay before it bounces
  * @param marker
  */
 Util.toggleMarkerBounceAnimation = function(marker, delay = 500) {
@@ -37,7 +38,7 @@ Util.toggleMarkerBounceAnimation = function(marker, delay = 500) {
 }
 
 /**
- *
+ * Toggles animation of marker
  * @param marker
  * @param animation
  */
@@ -50,7 +51,7 @@ Util.toggleMarkerAnimation = function(marker, animation) {
 }
 
 /**
- *
+ * Utility function to check if viewing on mobile
  * @returns {boolean}
  */
 Util.isMobile = function() {
@@ -58,7 +59,7 @@ Util.isMobile = function() {
 }
 
 /**
- *
+ * Tidies up list and the UI after initializing and setup of dependencies and data
  */
 Util.setupListUi = function() {
   $('span#arrow').click(() => {
@@ -66,6 +67,7 @@ Util.setupListUi = function() {
   });
   $( window ).resize(() => {
     if (Util.isMobile()) {
+      MapHelper.panAndZoomToDefaultPosition();
       $('ul').slideUp();
     } else {
       $('ul').slideDown();
@@ -75,6 +77,10 @@ Util.setupListUi = function() {
   $('ul').slideDown();
 }
 
+/**
+ * Fetch FourSquare info for place and set the place's info property
+ * @param place
+ */
 Util.fetchInfo = function(place) {
   const url = `https://api.foursquare.com/v2/venues/search?client_id=${fourSquareClientId}&client_secret=${fourSquareClientSecret}&v=20130815&ll=${place.lng},${place.lat}&query=\'${place.name}\'&limit=1`;
 
@@ -89,10 +95,18 @@ Util.fetchInfo = function(place) {
   });
 }
 
+/**
+ * Highlight place marker
+ * @param place
+ */
 Util.highlightPlace = function(place) {
   place.marker.setIcon(`${imgPath}active.png`);
 }
 
+/**
+ * Removes highlight from place marker
+ * @param place
+ */
 Util.unhighlightPlace = function(place) {
   switch (place.cat) {
     case 'eat':
@@ -106,6 +120,10 @@ Util.unhighlightPlace = function(place) {
   }
 }
 
+/**
+ * Closes any marker's openWindows
+ * @param viewModel
+ */
 Util.closeOpenInfoWindows = function(viewModel) {
   _.forEach(viewModel.places, ({ marker: { infoWindow } }) => {
     if (infoWindow) {
@@ -114,27 +132,25 @@ Util.closeOpenInfoWindows = function(viewModel) {
   });
 }
 
-Util.openInfoWindowForActiveMarker = function(map, marker, info) {
-  marker.infoWindow.setContent(info);
-  marker.infoWindow.open(map, marker);
-}
-
-Util.adjustMapForActiveMarker = function(map, marker) {
-  Util.centerAndPanMap(map, marker);
+/**
+ * Bring focus in the map to the active marker
+ * @param marker
+ */
+Util.adjustMapForActiveMarker = function(marker) {
+  MapHelper.panToMarker(marker);
   Util.toggleMarkerBounceAnimation(marker);
 }
 
+/**
+ * Loads the places of the neighbourhood from file
+ * @returns {Array}
+ */
 Util.setupPlaces = function() {
   const placesArr = [];
   _.forEach(_.sortBy(Places, 'name'), ({ name, cat, lng, lat }) => {
     placesArr.push(new Place(name, cat, lng, lat))
   });
   return placesArr;
-}
-
-Util.centerAndPanMap = function(map, marker) {
-  map.setCenter(marker.getPosition());
-  map.panTo(marker.getPosition());
 }
 
 export default Util;

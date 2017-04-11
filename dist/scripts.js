@@ -29586,7 +29586,6 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 // constant declarations
 var googleApiKey = 'AIzaSyC_77S5Ozh5RMPEQ98QBA9iOSHPQxZM_N8';
-var map = void 0;
 var viewModel = void 0;
 
 /**
@@ -29596,17 +29595,15 @@ var viewModel = void 0;
   libraries: ['places'],
   apiKey: googleApiKey
 }).then(function () {
-  map = _mapHelper2.default.initializeMap();
+  _mapHelper2.default.initializeMap();
   setupMarkersForPlaces();
   _util2.default.setupListUi();
 }, function (err) {
-  console.error('error for developer', err);
   alert('Problem loading Google Maps library. Please try again later');
 });
 
 /**
  * Display GoogleMaps InfoWindow for place with place info from 3rd party service
- *
  * @param place
  */
 var showInfoWindow = function showInfoWindow(_ref) {
@@ -29614,8 +29611,8 @@ var showInfoWindow = function showInfoWindow(_ref) {
       info = _ref.info;
 
   _util2.default.closeOpenInfoWindows(viewModel);
-  _util2.default.adjustMapForActiveMarker(map, marker);
-  _util2.default.openInfoWindowForActiveMarker(map, marker, info);
+  _util2.default.adjustMapForActiveMarker(marker);
+  _mapHelper2.default.openInfoWindowForActiveMarker(marker, info);
 };
 
 viewModel = {
@@ -29660,21 +29657,15 @@ viewModel.search = _knockout2.default.computed(function () {
  */
 function setupMarkersForPlaces() {
   _lodash2.default.forEach(viewModel.places, function (place) {
-    createMarker(place);
+    _mapHelper2.default.createMarker(place);
     setupMarkerClickListener(place);
   });
 }
 
-function createMarker(place) {
-  place.marker = new google.maps.Marker({
-    animation: google.maps.Animation.DROP,
-    icon: place.icon,
-    map: map,
-    name: place.name,
-    position: new google.maps.LatLng(place.lng, place.lat)
-  });
-}
-
+/**
+ * Sets up click listener for place marker
+ * @param place
+ */
 function setupMarkerClickListener(place) {
   place.marker.infoWindow = new google.maps.InfoWindow();
   place.marker.addListener = google.maps.event.addListener(place.marker, 'click', function () {
@@ -29684,43 +29675,78 @@ function setupMarkerClickListener(place) {
 
 _knockout2.default.applyBindings(viewModel);
 
-// TODOS:
-// TODO: indicate somewhere in your UI that using Foursquare
-// TODO: proper use of knockout 1
-// TODO: proper use of knockout 1a - Replace up and down arrow jquery dom manipulation with knockout
-// TODO: proper use of knockout 1b - Follow MVVM strictly (separation of view, model and viewmodel concerns)
-
 },{"./map-helper":10,"./util":12,"google-maps-api-loader":2,"knockout":6,"lodash":7}],10:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-/**
- * Created by andrewc on 4/10/2017.
- */
-/**
- *
- */
-
 var MapHelper = {};
-var defaultLat = -29.83608;
-var defaultLng = 30.918399;
+var defaultLat = -29.831808;
+var defaultLng = 30.924656000000027;
 var defaultZoomLevel = 15;
+var map = void 0;
 
+/**
+ * Initializes Google Map instance
+ * @returns {google.maps.Map}
+ */
 MapHelper.initializeMap = function () {
   var mapOptions = {
     zoom: defaultZoomLevel,
     center: new google.maps.LatLng(defaultLat, defaultLng),
-    disableDefaultUI: true
+    disableDefaultUI: true,
+    mapTypeId: 'roadmap',
+    gestureHandling: 'cooperative',
+    fullscreenControl: true
   };
-  var map = new google.maps.Map(document.getElementById('map'), mapOptions);
+  map = new google.maps.Map(document.getElementById('map'), mapOptions);
 
   if (map) {
     return map;
   } else {
     alert('Google failed to load');
   }
+};
+
+/**
+ * Centralizes map to marker
+ * @param marker
+ */
+MapHelper.panToMarker = function (marker) {
+  map.panTo(marker.getPosition());
+};
+
+/**
+ * Centralizes map to default position and zooms map to default zoom level
+ */
+MapHelper.panAndZoomToDefaultPosition = function () {
+  map.panTo(new google.maps.LatLng(defaultLat, defaultLng));
+  map.setZoom(defaultZoomLevel);
+};
+
+/**
+ * Displays infoWindow of active marker
+ * @param marker
+ * @param info
+ */
+MapHelper.openInfoWindowForActiveMarker = function (marker, info) {
+  marker.infoWindow.setContent(info);
+  marker.infoWindow.open(map, marker);
+};
+
+/**
+ * Creates map marker for place
+ * @param place
+ */
+MapHelper.createMarker = function (place) {
+  place.marker = new google.maps.Marker({
+    animation: google.maps.Animation.DROP,
+    icon: place.icon,
+    map: map,
+    name: place.name,
+    position: new google.maps.LatLng(place.lng, place.lat)
+  });
 };
 
 exports.default = MapHelper;
@@ -29804,12 +29830,17 @@ var _places = require('./places.json');
 
 var _places2 = _interopRequireDefault(_places);
 
+var _mapHelper = require('./map-helper');
+
+var _mapHelper2 = _interopRequireDefault(_mapHelper);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 /**
  * Created by andrewc on 4/10/2017.
  */
 var Util = {};
+
 
 var bounceTwiceAnimation = 4;
 var fourSquareClientId = '0FD1PHV1YKMHSMF0T1M1PFIFLWRB12EQAGRDIK5Z2WOJOVNQ';
@@ -29834,7 +29865,7 @@ var Place = function Place(name, cat, lng, lat) {
 };
 
 /**
- *
+ * Toggles bounce animation of marker with a specified delay before it bounces
  * @param marker
  */
 Util.toggleMarkerBounceAnimation = function (marker) {
@@ -29848,7 +29879,7 @@ Util.toggleMarkerBounceAnimation = function (marker) {
 };
 
 /**
- *
+ * Toggles animation of marker
  * @param marker
  * @param animation
  */
@@ -29861,7 +29892,7 @@ Util.toggleMarkerAnimation = function (marker, animation) {
 };
 
 /**
- *
+ * Utility function to check if viewing on mobile
  * @returns {boolean}
  */
 Util.isMobile = function () {
@@ -29870,7 +29901,7 @@ Util.isMobile = function () {
 };
 
 /**
- *
+ * Tidies up list and the UI after initializing and setup of dependencies and data
  */
 Util.setupListUi = function () {
   (0, _jquery2.default)('span#arrow').click(function () {
@@ -29878,6 +29909,7 @@ Util.setupListUi = function () {
   });
   (0, _jquery2.default)(window).resize(function () {
     if (Util.isMobile()) {
+      _mapHelper2.default.panAndZoomToDefaultPosition();
       (0, _jquery2.default)('ul').slideUp();
     } else {
       (0, _jquery2.default)('ul').slideDown();
@@ -29887,6 +29919,10 @@ Util.setupListUi = function () {
   (0, _jquery2.default)('ul').slideDown();
 };
 
+/**
+ * Fetch FourSquare info for place and set the place's info property
+ * @param place
+ */
 Util.fetchInfo = function (place) {
   var url = 'https://api.foursquare.com/v2/venues/search?client_id=' + fourSquareClientId + '&client_secret=' + fourSquareClientSecret + '&v=20130815&ll=' + place.lng + ',' + place.lat + '&query=\'' + place.name + '\'&limit=1';
 
@@ -29904,10 +29940,18 @@ Util.fetchInfo = function (place) {
   });
 };
 
+/**
+ * Highlight place marker
+ * @param place
+ */
 Util.highlightPlace = function (place) {
   place.marker.setIcon(imgPath + 'active.png');
 };
 
+/**
+ * Removes highlight from place marker
+ * @param place
+ */
 Util.unhighlightPlace = function (place) {
   switch (place.cat) {
     case 'eat':
@@ -29921,6 +29965,10 @@ Util.unhighlightPlace = function (place) {
   }
 };
 
+/**
+ * Closes any marker's openWindows
+ * @param viewModel
+ */
 Util.closeOpenInfoWindows = function (viewModel) {
   _lodash2.default.forEach(viewModel.places, function (_ref2) {
     var infoWindow = _ref2.marker.infoWindow;
@@ -29931,16 +29979,19 @@ Util.closeOpenInfoWindows = function (viewModel) {
   });
 };
 
-Util.openInfoWindowForActiveMarker = function (map, marker, info) {
-  marker.infoWindow.setContent(info);
-  marker.infoWindow.open(map, marker);
-};
-
-Util.adjustMapForActiveMarker = function (map, marker) {
-  Util.centerAndPanMap(map, marker);
+/**
+ * Bring focus in the map to the active marker
+ * @param marker
+ */
+Util.adjustMapForActiveMarker = function (marker) {
+  _mapHelper2.default.panToMarker(marker);
   Util.toggleMarkerBounceAnimation(marker);
 };
 
+/**
+ * Loads the places of the neighbourhood from file
+ * @returns {Array}
+ */
 Util.setupPlaces = function () {
   var placesArr = [];
   _lodash2.default.forEach(_lodash2.default.sortBy(_places2.default, 'name'), function (_ref3) {
@@ -29954,11 +30005,6 @@ Util.setupPlaces = function () {
   return placesArr;
 };
 
-Util.centerAndPanMap = function (map, marker) {
-  map.setCenter(marker.getPosition());
-  map.panTo(marker.getPosition());
-};
-
 exports.default = Util;
 
-},{"./places.json":11,"jquery":5,"lodash":7}]},{},[9]);
+},{"./map-helper":10,"./places.json":11,"jquery":5,"lodash":7}]},{},[9]);
