@@ -29582,10 +29582,6 @@ var _util = require('./util');
 
 var _util2 = _interopRequireDefault(_util);
 
-var _places = require('./places.json');
-
-var _places2 = _interopRequireDefault(_places);
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 // constant declarations
@@ -29609,64 +29605,26 @@ var viewModel = void 0;
 });
 
 /**
- * Place model constructor to create a place object based on place info and google marker properties
- *
- * @param name
- * @param cat
- * @param lng
- * @param lat
- * @constructor
- */
-var Place = function Place(name, cat, lng, lat) {
-  this.name = name;
-  this.lng = lng;
-  this.lat = lat;
-  this.cat = cat;
-  _util2.default.fetchInfo(this);
-};
-
-/**
  * Display GoogleMaps InfoWindow for place with place info from 3rd party service
  *
  * @param place
  */
-var showInfoWindow = function showInfoWindow(place) {
-  map.setCenter(place.marker.getPosition());
-  _lodash2.default.forEach(viewModel.places, function (_ref) {
-    var infoWindow = _ref.marker.infoWindow;
+var showInfoWindow = function showInfoWindow(_ref) {
+  var marker = _ref.marker,
+      info = _ref.info;
 
-    if (infoWindow) {
-      infoWindow.close();
-    }
-  });
-  map.panTo(place.marker.getPosition());
-  place.marker.infoWindow.setContent(place.info);
-  place.marker.infoWindow.open(map, place.marker);
-  _lodash2.default.defer(function () {
-    return _util2.default.toggleMarkerBounceAnimation(place.marker);
-  });
+  _util2.default.closeOpenInfoWindows(viewModel);
+  _util2.default.adjustMapForActiveMarker(map, marker);
+  _util2.default.openInfoWindowForActiveMarker(map, marker, info);
 };
 
 viewModel = {
   highlightPlace: _util2.default.highlightPlace,
-  places: setupPlaces(),
+  places: _util2.default.setupPlaces(),
   query: _knockout2.default.observable(''),
   showInfoWindow: showInfoWindow,
   unhighlightPlace: _util2.default.unhighlightPlace
 };
-
-function setupPlaces() {
-  var placesArr = [];
-  _lodash2.default.forEach(_places2.default, function (_ref2) {
-    var name = _ref2.name,
-        cat = _ref2.cat,
-        lng = _ref2.lng,
-        lat = _ref2.lat;
-
-    placesArr.push(new Place(name, cat, lng, lat));
-  });
-  return placesArr;
-}
 
 /**
  * Search function for input search query. Filters down list of places shown in list as well as markers visible.
@@ -29674,25 +29632,17 @@ function setupPlaces() {
 viewModel.search = _knockout2.default.computed(function () {
   var _this = this;
   var search = _this.query().toLowerCase();
-  var searchResults = _knockout2.default.utils.arrayFilter(_this.places, function (_ref3) {
-    var name = _ref3.name,
-        marker = _ref3.marker;
+  var searchResults = _knockout2.default.utils.arrayFilter(_this.places, function (_ref2) {
+    var name = _ref2.name,
+        marker = _ref2.marker;
 
-    var match = name.toLowerCase().indexOf(search) >= 0;
-    if (!match) {
-      if (marker) {
-        marker.setVisible(false);
-      }
-    } else {
-      if (marker) {
-        marker.setVisible(true);
-      }
-    }
+    var match = name.toLowerCase().includes(search);
+    marker ? match ? marker.setVisible(true) : marker.setVisible(false) : null;
     return match;
   });
 
   if (_lodash2.default.isEmpty(searchResults)) {
-    searchResults = viewModel.places;
+    return viewModel.places;
   }
 
   return searchResults;
@@ -29703,37 +29653,40 @@ viewModel.search = _knockout2.default.computed(function () {
  */
 function setupMarkersForPlaces() {
   _lodash2.default.forEach(viewModel.places, function (place) {
-    place.marker = new google.maps.Marker({
-      position: new google.maps.LatLng(place.lng, place.lat),
-      animation: google.maps.Animation.DROP,
-      map: map,
-      name: place.name,
-      icon: place.icon
-    });
+    createMarker(place);
+    setupMarkerClickListener(place);
+  });
+}
 
-    place.marker.infoWindow = new google.maps.InfoWindow();
-    place.marker.addListener = google.maps.event.addListener(place.marker, 'click', function () {
-      map.setCenter(place.marker.getPosition());
-      _lodash2.default.forEach(viewModel.places, function (_ref4) {
-        var infoWindow = _ref4.marker.infoWindow;
+function createMarker(place) {
+  place.marker = new google.maps.Marker({
+    animation: google.maps.Animation.DROP,
+    icon: place.icon,
+    map: map,
+    name: place.name,
+    position: new google.maps.LatLng(place.lng, place.lat)
+  });
+}
 
-        if (infoWindow) {
-          infoWindow.close();
-        }
-      });
-      map.panTo(place.marker.getPosition());
-      place.marker.infoWindow.setContent(place.info);
-      place.marker.infoWindow.open(map, place.marker);
-      _lodash2.default.defer(function () {
-        return _util2.default.toggleMarkerBounceAnimation(place.marker);
-      });
+function setupMarkerClickListener(_ref3) {
+  var marker = _ref3.marker,
+      info = _ref3.info;
+
+  marker.infoWindow = new google.maps.InfoWindow();
+  marker.addListener = google.maps.event.addListener(marker, 'click', function () {
+    _util2.default.centerAndPanMap(map, marker);
+    _util2.default.closeOpenInfoWindows(viewModel);
+    marker.infoWindow.setContent(info);
+    marker.infoWindow.open(map, marker);
+    _lodash2.default.defer(function () {
+      return _util2.default.toggleMarkerBounceAnimation(marker);
     });
   });
 }
 
 _knockout2.default.applyBindings(viewModel);
 
-},{"./map-helper":10,"./places.json":11,"./util":12,"google-maps-api-loader":2,"knockout":6,"lodash":7}],10:[function(require,module,exports){
+},{"./map-helper":10,"./util":12,"google-maps-api-loader":2,"knockout":6,"lodash":7}],10:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -29823,9 +29776,17 @@ Object.defineProperty(exports, "__esModule", {
 
 var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
 
+var _lodash = require('lodash');
+
+var _lodash2 = _interopRequireDefault(_lodash);
+
 var _jquery = require('jquery');
 
 var _jquery2 = _interopRequireDefault(_jquery);
+
+var _places = require('./places.json');
+
+var _places2 = _interopRequireDefault(_places);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -29838,6 +29799,23 @@ var bounceTwiceAnimation = 4;
 var fourSquareClientId = '0FD1PHV1YKMHSMF0T1M1PFIFLWRB12EQAGRDIK5Z2WOJOVNQ';
 var fourSquareClientSecret = 'XXASVO0SW14RJKNE0ETMNNATAPQVBO0PPJA5WFNATBPW3J3L';
 var imgPath = 'src/css/img/';
+
+/**
+ * Place model constructor to create a place object based on place info and google marker properties
+ *
+ * @param name
+ * @param cat
+ * @param lng
+ * @param lat
+ * @constructor
+ */
+var Place = function Place(name, cat, lng, lat) {
+  this.cat = cat;
+  this.lat = lat;
+  this.lng = lng;
+  this.name = name;
+  Util.fetchInfo(this);
+};
 
 /**
  *
@@ -29929,6 +29907,46 @@ Util.unhighlightPlace = function (place) {
   }
 };
 
+Util.closeOpenInfoWindows = function (viewModel) {
+  _lodash2.default.forEach(viewModel.places, function (_ref2) {
+    var infoWindow = _ref2.marker.infoWindow;
+
+    if (infoWindow) {
+      infoWindow.close();
+    }
+  });
+};
+
+Util.openInfoWindowForActiveMarker = function (map, marker, info) {
+  marker.infoWindow.setContent(info);
+  marker.infoWindow.open(map, marker);
+};
+
+Util.adjustMapForActiveMarker = function (map, marker) {
+  Util.centerAndPanMap(map, marker);
+  setTimeout(function () {
+    return Util.toggleMarkerBounceAnimation(marker);
+  }, 500);
+};
+
+Util.setupPlaces = function () {
+  var placesArr = [];
+  _lodash2.default.forEach(_places2.default, function (_ref3) {
+    var name = _ref3.name,
+        cat = _ref3.cat,
+        lng = _ref3.lng,
+        lat = _ref3.lat;
+
+    placesArr.push(new Place(name, cat, lng, lat));
+  });
+  return placesArr;
+};
+
+Util.centerAndPanMap = function (map, marker) {
+  map.setCenter(marker.getPosition());
+  map.panTo(marker.getPosition());
+};
+
 exports.default = Util;
 
-},{"jquery":5}]},{},[9]);
+},{"./places.json":11,"jquery":5,"lodash":7}]},{},[9]);

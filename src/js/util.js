@@ -2,11 +2,31 @@
  * Created by andrewc on 4/10/2017.
  */
 const Util = {};
+import _ from 'lodash';
 import $ from 'jquery';
+import Places from './places.json';
 const bounceTwiceAnimation = 4;
 const fourSquareClientId = '0FD1PHV1YKMHSMF0T1M1PFIFLWRB12EQAGRDIK5Z2WOJOVNQ';
 const fourSquareClientSecret = 'XXASVO0SW14RJKNE0ETMNNATAPQVBO0PPJA5WFNATBPW3J3L';
 const imgPath = 'src/css/img/';
+
+
+/**
+ * Place model constructor to create a place object based on place info and google marker properties
+ *
+ * @param name
+ * @param cat
+ * @param lng
+ * @param lat
+ * @constructor
+ */
+const Place = function(name, cat, lng, lat) {
+  this.cat = cat;
+  this.lat = lat;
+  this.lng = lng;
+  this.name = name;
+  Util.fetchInfo(this);
+};
 
 /**
  *
@@ -92,6 +112,37 @@ Util.unhighlightPlace = function(place) {
     default:
       place.marker.setIcon(`${imgPath}default.png`);
   }
+}
+
+Util.closeOpenInfoWindows = function(viewModel) {
+  _.forEach(viewModel.places, ({ marker: { infoWindow } }) => {
+    if (infoWindow) {
+      infoWindow.close();
+    }
+  });
+}
+
+Util.openInfoWindowForActiveMarker = function(map, marker, info) {
+  marker.infoWindow.setContent(info);
+  marker.infoWindow.open(map, marker);
+}
+
+Util.adjustMapForActiveMarker = function(map, marker) {
+  Util.centerAndPanMap(map, marker);
+  setTimeout(() => Util.toggleMarkerBounceAnimation(marker), 500);
+}
+
+Util.setupPlaces = function() {
+  const placesArr = [];
+  _.forEach(Places, ({ name, cat, lng, lat }) => {
+    placesArr.push(new Place(name, cat, lng, lat))
+  });
+  return placesArr;
+}
+
+Util.centerAndPanMap = function(map, marker) {
+  map.setCenter(marker.getPosition());
+  map.panTo(marker.getPosition());
 }
 
 export default Util;
