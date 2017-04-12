@@ -29699,6 +29699,8 @@ var MapHelper = {};
 var defaultLat = -29.831808;
 var defaultLng = 30.924656000000027;
 var defaultZoomLevel = 15;
+var bottomOffSet = 0;
+var leftOffSet = -100;
 var map = void 0;
 
 /**
@@ -29733,9 +29735,8 @@ MapHelper.panAndZoomToPosition = function (position) {
   if (_util2.default.isMobile()) {
     // if mobile pan to marker where marker is vertically bottom of screen
     var divHeightOfTheMap = (0, _jquery2.default)('#map').outerHeight();
-    var bottomOffSet = 45;
     map.setCenter(position);
-    map.panBy(0, -(0.5 * divHeightOfTheMap - bottomOffSet));
+    map.panBy(leftOffSet, -(0.5 * divHeightOfTheMap - bottomOffSet));
   } else {
     // if desktop pan to marker - just center map to marker
     map.panTo(new google.maps.LatLng(defaultLat, defaultLng));

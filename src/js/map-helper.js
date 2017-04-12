@@ -6,6 +6,8 @@ import Util from './util';
 const defaultLat = -29.831808;
 const defaultLng = 30.924656000000027;
 const defaultZoomLevel = 15;
+const bottomOffSet = 0;
+const leftOffSet = -100;
 let map;
 
 /**
@@ -39,9 +41,8 @@ MapHelper.panAndZoomToPosition = function(position) {
 
   if (Util.isMobile()) { // if mobile pan to marker where marker is vertically bottom of screen
     const divHeightOfTheMap = $('#map').outerHeight();
-    const bottomOffSet = 45;
     map.setCenter(position);
-    map.panBy(0, -((0.5 * divHeightOfTheMap) - bottomOffSet));
+    map.panBy(leftOffSet, -((0.5 * divHeightOfTheMap) - bottomOffSet));
   } else { // if desktop pan to marker - just center map to marker
     map.panTo(new google.maps.LatLng(defaultLat, defaultLng));
   }
