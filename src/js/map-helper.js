@@ -28,11 +28,11 @@ MapHelper.initializeMap = function() {
   } else {
     alert('Google failed to load');
   }
-}
+};
 
 /**
  * Centralizes map to marker
- * @param marker
+ * @param position
  */
 MapHelper.panAndZoomToPosition = function(position) {
   map.setZoom(defaultZoomLevel);
@@ -45,14 +45,14 @@ MapHelper.panAndZoomToPosition = function(position) {
   } else { // if desktop pan to marker - just center map to marker
     map.panTo(new google.maps.LatLng(defaultLat, defaultLng));
   }
-}
+};
 
 /**
  * Centralizes map to default position and zooms map to default zoom level
  */
 MapHelper.panAndZoomToDefaultPosition = function() {
   MapHelper.panAndZoomToPosition(new google.maps.LatLng(defaultLat, defaultLng));
-}
+};
 
 /**
  * Displays infoWindow of active marker
@@ -62,7 +62,7 @@ MapHelper.panAndZoomToDefaultPosition = function() {
 MapHelper.openInfoWindowForActiveMarker = function(marker, info) {
   marker.infoWindow.setContent(info);
   marker.infoWindow.open(map, marker);
-}
+};
 
 /**
  * Creates map marker for place
@@ -76,6 +76,6 @@ MapHelper.createMarker = function(place) {
     name: place.name,
     position: new google.maps.LatLng(place.lng, place.lat)
   });
-}
+};
 
 export default MapHelper;

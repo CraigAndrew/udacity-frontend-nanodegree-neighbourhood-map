@@ -31,7 +31,7 @@ const showInfoWindow = function({ marker, info }) {
   Util.closeOpenInfoWindows(viewModel);
   Util.adjustMapForActiveMarker(marker);
   MapHelper.openInfoWindowForActiveMarker(marker, info);
-}
+};
 
 viewModel = {
   highlightPlace: Util.highlightPlace,

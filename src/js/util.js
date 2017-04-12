@@ -30,10 +30,11 @@ const Place = function(name, cat, lng, lat) {
 /**
  * Toggles bounce animation of marker with a specified delay before it bounces
  * @param marker
+ * @param delay
  */
 Util.toggleMarkerBounceAnimation = function(marker, delay = 500) {
   setTimeout(() => this.toggleMarkerAnimation(marker, bounceTwiceAnimation, delay));
-}
+};
 
 /**
  * Toggles animation of marker
@@ -46,7 +47,7 @@ Util.toggleMarkerAnimation = function(marker, animation) {
   } else {
     marker.setAnimation(animation);
   }
-}
+};
 
 /**
  * Utility function to check if viewing on mobile
@@ -54,7 +55,7 @@ Util.toggleMarkerAnimation = function(marker, animation) {
  */
 Util.isMobile = function() {
   return (/Mobi/.test(navigator.userAgent));
-}
+};
 
 /**
  * Tidies up list and the UI after initializing and setup of dependencies and data
@@ -74,15 +75,15 @@ Util.setupListUi = function(viewModel) {
   });
 
   Util.openList();
-}
+};
 
 Util.closeList = function() {
   $('ul').slideUp();
-}
+};
 
 Util.openList = function() {
   $('ul').slideDown();
-}
+};
 
 /**
  * Fetch FourSquare info for place and set the place's info property
@@ -100,7 +101,7 @@ Util.fetchInfo = function(place) {
   }).fail((jqXHR, textStatus, errorThrown) => {
     place.info = 'Problem with foursquare. Please try again later';
   });
-}
+};
 
 /**
  * Highlight place marker
@@ -108,7 +109,7 @@ Util.fetchInfo = function(place) {
  */
 Util.highlightPlace = function(place) {
   place.marker.setIcon(`${imgPath}active.png`);
-}
+};
 
 /**
  * Removes highlight from place marker
@@ -125,7 +126,7 @@ Util.unhighlightPlace = function(place) {
     default:
       place.marker.setIcon(`${imgPath}default.png`);
   }
-}
+};
 
 /**
  * Closes any marker's openWindows
@@ -137,7 +138,7 @@ Util.closeOpenInfoWindows = function(viewModel) {
       infoWindow.close();
     }
   });
-}
+};
 
 /**
  * Bring focus in the map to the active marker
@@ -146,7 +147,7 @@ Util.closeOpenInfoWindows = function(viewModel) {
 Util.adjustMapForActiveMarker = function(marker) {
   MapHelper.panAndZoomToPosition(marker.getPosition());
   Util.toggleMarkerBounceAnimation(marker);
-}
+};
 
 /**
  * Loads the places of the neighbourhood from file
@@ -158,6 +159,6 @@ Util.setupPlaces = function() {
     placesArr.push(new Place(name, cat, lng, lat))
   });
   return placesArr;
-}
+};
 
 export default Util;

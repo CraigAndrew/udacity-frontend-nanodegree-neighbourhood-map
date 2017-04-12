@@ -29725,7 +29725,7 @@ MapHelper.initializeMap = function () {
 
 /**
  * Centralizes map to marker
- * @param marker
+ * @param position
  */
 MapHelper.panAndZoomToPosition = function (position) {
   map.setZoom(defaultZoomLevel);
@@ -29860,9 +29860,6 @@ var _mapHelper2 = _interopRequireDefault(_mapHelper);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-/**
- * Created by andrewc on 4/10/2017.
- */
 var Util = {};
 
 var bounceTwiceAnimation = 4;
@@ -29890,6 +29887,7 @@ var Place = function Place(name, cat, lng, lat) {
 /**
  * Toggles bounce animation of marker with a specified delay before it bounces
  * @param marker
+ * @param delay
  */
 Util.toggleMarkerBounceAnimation = function (marker) {
   var _this = this;
