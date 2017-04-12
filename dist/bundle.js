@@ -29688,6 +29688,10 @@ var _jquery = require('jquery');
 
 var _jquery2 = _interopRequireDefault(_jquery);
 
+var _util = require('./util');
+
+var _util2 = _interopRequireDefault(_util);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var MapHelper = {};
@@ -29726,10 +29730,16 @@ MapHelper.initializeMap = function () {
 MapHelper.panAndZoomToPosition = function (position) {
   map.setZoom(defaultZoomLevel);
 
-  var divHeightOfTheMap = (0, _jquery2.default)('#map').outerHeight();
-  var bottomOffSet = 45;
-  map.setCenter(position);
-  map.panBy(0, -(0.5 * divHeightOfTheMap - bottomOffSet));
+  if (_util2.default.isMobile()) {
+    // if mobile pan to marker where marker is vertically bottom of screen
+    var divHeightOfTheMap = (0, _jquery2.default)('#map').outerHeight();
+    var bottomOffSet = 45;
+    map.setCenter(position);
+    map.panBy(0, -(0.5 * divHeightOfTheMap - bottomOffSet));
+  } else {
+    // if desktop pan to marker - just center map to marker
+    map.panTo(new google.maps.LatLng(defaultLat, defaultLng));
+  }
 };
 
 /**
@@ -29765,7 +29775,7 @@ MapHelper.createMarker = function (place) {
 
 exports.default = MapHelper;
 
-},{"jquery":5}],11:[function(require,module,exports){
+},{"./util":12,"jquery":5}],11:[function(require,module,exports){
 module.exports=[
   {
     "name": "The Pavilion Shopping Mall",
@@ -29854,7 +29864,6 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
  * Created by andrewc on 4/10/2017.
  */
 var Util = {};
-
 
 var bounceTwiceAnimation = 4;
 var fourSquareClientId = '0FD1PHV1YKMHSMF0T1M1PFIFLWRB12EQAGRDIK5Z2WOJOVNQ';

@@ -1,7 +1,5 @@
-/**
- * Created by andrewc on 4/10/2017.
- */
 const Util = {};
+
 import _ from 'lodash';
 import $ from 'jquery';
 import Places from './places.json';
