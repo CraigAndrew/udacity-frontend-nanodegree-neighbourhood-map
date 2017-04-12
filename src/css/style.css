@@ -6,30 +6,30 @@ body {
     font: 18px/28px Calibri, Arial, Helvetica;
 }
 
-#map {
-  width: 100%;
-  height: 100%;
-  left: 0;
-  position: absolute;
-  top: 0;
-  z-index: 99;
+.map {
+    width: 100%;
+    height: 100%;
+    left: 0;
+    position: absolute;
+    top: 0;
+    z-index: 99;
 }
 
-div.search-area {
-  position: absolute;
-  width: 100%;
-  max-width: 300px;
-  min-width: 100px;
-  margin-left: 7px;
-  margin-top: 7px;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
-  font-family: Roboto,Arial,sans-serif;
-  font-size: 14px;
-  z-index: 100;
-  flex-grow: 1;
+.search-area {
+    position: absolute;
+    width: 100%;
+    max-width: 300px;
+    min-width: 100px;
+    margin-left: 7px;
+    margin-top: 7px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+    font-family: Roboto,Arial,sans-serif;
+    font-size: 14px;
+    z-index: 100;
+    flex-grow: 1;
 }
 
-input.search-input {
+.search-input {
     font-size: 12px;
     margin-left: 0;
     padding-left: 2px;
@@ -40,33 +40,20 @@ input.search-input {
 }
 
 input[list] {
-  background-color: rgba(0,0,0,.3);
+    background-color: rgba(0,0,0,.3);
 }
 
 ul {
-  list-style-type: none;
-  padding: 0;
-  height: 150px;
-  overflow:hidden; overflow-y:scroll;
+    list-style-type: none;
+    padding: 0;
+    height: 150px;
+    overflow:hidden; overflow-y:scroll;
 }
 
 li {
-  background-color: rgba(0,0,0,.3);
-  padding-left: 5px;
-  font-weight: bold;
-}
-
-.active-item {
-  background-color: white;
-}
-
-#input {
-    font-size: 12px;
-    margin-left: 0;
-    text-overflow: ellipsis;
-    width: 300px;
-    margin-top: 44px;
-    margin-right: -74px;
+    background-color: rgba(0,0,0,.3);
+    padding-left: 5px;
+    font-weight: bold;
 }
 
 .arrow {
