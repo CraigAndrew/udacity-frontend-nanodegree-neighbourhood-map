@@ -90,3 +90,5 @@ function setupMarkerClickListener(place) {
 }
 
 ko.applyBindings(viewModel);
+
+// TODO: Update ReadMe file.

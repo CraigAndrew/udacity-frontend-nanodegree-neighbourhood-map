@@ -29675,6 +29675,8 @@ function setupMarkerClickListener(place) {
 
 _knockout2.default.applyBindings(viewModel);
 
+// TODO: Update ReadMe file.
+
 },{"./map-helper":10,"./util":12,"google-maps-api-loader":2,"knockout":6,"lodash":7}],10:[function(require,module,exports){
 'use strict';
 
@@ -29966,7 +29968,6 @@ Util.fetchInfo = function (place) {
  * @param place
  */
 Util.highlightPlace = function (place) {
-  console.log('highlightPlace', place);
   place.marker.setIcon(imgPath + 'active.png');
 };
 
@@ -29992,7 +29993,6 @@ Util.unhighlightPlace = function (place) {
  * @param viewModel
  */
 Util.closeOpenInfoWindows = function (viewModel) {
-  console.log('closeOpenInfoWindows');
   _lodash2.default.forEach(viewModel.places, function (_ref2) {
     var infoWindow = _ref2.marker.infoWindow;
 
