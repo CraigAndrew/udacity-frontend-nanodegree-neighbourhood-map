@@ -37,11 +37,11 @@ MapHelper.initializeMap = function() {
  * @param position
  */
 MapHelper.panAndZoomToPosition = function(position) {
+  map.setCenter(position);
   map.setZoom(defaultZoomLevel);
 
   if (Util.isMobile()) { // if mobile pan to marker where marker is vertically bottom of screen
     const divHeightOfTheMap = $('#map').outerHeight();
-    map.setCenter(position);
     map.panBy(leftOffSet, -((0.5 * divHeightOfTheMap) - bottomOffSet));
   } else { // if desktop pan to marker - just center map to marker
     map.panTo(new google.maps.LatLng(defaultLat, defaultLng));
